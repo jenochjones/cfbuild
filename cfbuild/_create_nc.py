@@ -47,10 +47,10 @@ def create_or_update_nc_file(ncml_object, final_netcdf4_dataset, original_datase
         netcdf_element.setncatts(attribute_dictionary)
         return attribute_dictionary
 
-    def iterate_group(xml_element, final_netcdf4_dataset_group, ncbuild_dataset_group, original_dataset_group):
+    def iterate_group(xml_element, final_netcdf4_dataset_group, cfbuild_dataset_group, original_dataset_group):
         variable_dictionary = {}
-        for ncbuild_variable in ncbuild_dataset_group.variables:
-            variable_dictionary[ncbuild_variable.name] = ncbuild_variable
+        for cfbuild_variable in cfbuild_dataset_group.variables:
+            variable_dictionary[cfbuild_variable.name] = cfbuild_variable
 
         for element in xml_element:
 
@@ -114,6 +114,6 @@ def create_or_update_nc_file(ncml_object, final_netcdf4_dataset, original_datase
 
     tree = etree.parse(ncml_object.ncml_filepath)
     root = tree.getroot()
-    ncbuild_dataset = ncml_object.dataset
+    cfbuild_dataset = ncml_object.dataset
     add_attributes(root, final_netcdf4_dataset)
-    iterate_group(root, final_netcdf4_dataset, ncbuild_dataset, original_dataset)
+    iterate_group(root, final_netcdf4_dataset, cfbuild_dataset, original_dataset)

@@ -46,7 +46,7 @@ class Dataset:
         self.read_filepath = None
         self.variables = []
 
-        with resources.open_binary('ncbuild', STANDARD_NAME_TABLE_LOCATION) as file_path:
+        with resources.open_binary('cfbuild', STANDARD_NAME_TABLE_LOCATION) as file_path:
             table = file_path.read()
 
         self.standard_name_table = io.BytesIO(table)
@@ -64,7 +64,7 @@ class Dataset:
             self.dataset = dataset_or_filepath
             from_file(self)
         else:
-            print('Creating dataset from ncbild')
+            print('Creating dataset from cfbuild')
             '''
             if self.read_filepath == None:
                 print('read filepath not yet set')
@@ -160,7 +160,7 @@ class Dimension:
 class NCML:
     def __init__(self, ncml_filepath: str, dataset: Dataset):
         self.ncml_filepath = ncml_filepath
-        self.dataset = dataset  # this is an ncbuild dataset object
+        self.dataset = dataset  # this is an cfbuild dataset object
         self.xml_tree = etree.parse(ncml_filepath)
 
     def to_nc(self, nc_filepath: str or None = None, write_mode: str = 'w'):

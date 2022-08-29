@@ -1,4 +1,4 @@
-from ncbuild._classes import Dataset, NCML
+from cfbuild._classes import Dataset, NCML
 
 __all__ = ['Dataset', 'NCML', ]
 __author__ = 'J Enoch Jones'
