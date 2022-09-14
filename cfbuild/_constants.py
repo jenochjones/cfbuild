@@ -42,6 +42,8 @@ VARIABLE_TYPE_INDICATORS = {
     'U': 'Unknown'
 }
 
+COORDINATE_VARIABLE_LIST = ['Coordinate', 'Time Coordinate', 'X Coordinate', 'Y Coordinate', 'Z Coordinate']
+
 # GLOBAL ATTRIBUTES ##################################################################################################
 
 ACDD_ATTRIBUTES_REQUIRED = {
@@ -179,11 +181,10 @@ CF_ALL_COORDINATE_VARIABLE_ATTRIBUTES = {
     'comment': WARNING_MESSAGE + 'Miscellaneous information about the data or methods used to produce it',
     'valid_range': WARNING_MESSAGE + 'Smallest and largest valid values of a variable',
     'actual_range': WARNING_MESSAGE + 'The smallest and the largest valid nonmissing values occurring in the variable',
-    '_FillValue': WARNING_MESSAGE + 'A value used to represent missing or undefined data. Allowed for auxiliary '
-                                    'coordinate variables but not allowed for coordinate variables',
+    '_FillValue': WARNING_MESSAGE + 'A value used to represent missing or undefined data. Allowed for auxiliary coordinate variables but not allowed for coordinate variables',
+    'cf_role': 'timeseries_id'#['timeseries_id', 'profile_id', 'trajectory_id'], # 'Identifies the roles of variables that identify features in discrete sampling geometries',
     
     # a COORDINATE_VARIABLE:
-    # 'cf_role': ['timeseries_id', 'profile_id', 'trajectory_id'], # 'Identifies the roles of variables that identify features in discrete sampling geometries',
     # 'climatology': WARNING_MESSAGE + 'Identifies a climatology variable',
     # 'bounds': WARNING_MESSAGE + 'Identifies a boundary variable',
     # 'compress': WARNING_MESSAGE + 'Records dimensions which have been compressed by gathering',

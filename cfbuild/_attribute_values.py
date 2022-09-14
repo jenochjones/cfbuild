@@ -5,16 +5,21 @@ from cfunits import Units
 from lxml import etree
 
 from ._ncml_comments import UNITS_WARNING, STANDARD_NAME_WARNING, TEMPORAL_UNITS_WARNING, \
-    OPENDAP_RESERVED_KEYWORDS_WARNING
-from ._constants import CONVENTION_VERSIONS, WARNING_MESSAGE, GLOBAL_ATTRIBUTES, UNITS, OPENDAP_RESERVED_KEYWORDS, VARIABLE_TYPE_INDICATORS
+    OPENDAP_RESERVED_KEYWORDS_WARNING, MISSING_VALUES_ERROR, MONOTONIC_VALUES_ERROR, \
+    CANT_GET_VALUES_WARNING, MULTIDIMENSIONAL_WARNING
+from ._constants import CONVENTION_VERSIONS, WARNING_MESSAGE, GLOBAL_ATTRIBUTES, UNITS, \
+    OPENDAP_RESERVED_KEYWORDS, VARIABLE_TYPE_INDICATORS, COORDINATE_VARIABLE_LIST
 from ._ncml_comments import ADD_GRID_MAPPING_VARIABLE
 
 
-def _check_variable(variable):
+def _check_variable(variable, variable_values):
     list_of_warnings = []
     if variable.name in OPENDAP_RESERVED_KEYWORDS:
         list_of_warnings.append(OPENDAP_RESERVED_KEYWORDS_WARNING)
-
+    if variable.variable_type in COORDINATE_VARIABLE_LIST:
+        warning = _check_coordinate_variables(variable, variable_values)
+        for warning_str in warning:
+            list_of_warnings.append(warning_str)
     return list_of_warnings
 
 
@@ -165,12 +170,28 @@ def _check_attribute_values(merged_attributes, variable, standard_name_table, va
         else:
             if type(merged_attributes['actual_range']) == str:
                 if WARNING_MESSAGE in merged_attributes['actual_range']:
-                    actual_min = variable_values[:].min()
-                    actual_max = variable_values[:].max()
+                    actual_min = numpy.nanmin(variable_values[:])
+                    actual_max = numpy.nanmax(variable_values[:])
 
                     merged_attributes['actual_range'] = [actual_min, actual_max]
 
     return merged_attributes
+
+
+def _check_coordinate_variables(variable, variable_values):
+    warning_list = []
+    if variable_values is not None:
+        if len(variable_values.shape) == 1:
+            array_sum = numpy.sum(variable_values)
+            if numpy.isnan(array_sum) or numpy.ma.is_masked(variable_values):
+                warning_list.append(f'{MISSING_VALUES_ERROR[0]}{variable.name}{MISSING_VALUES_ERROR[1]}')
+            if not numpy.all(variable.values[1:] > variable.values[:-1], axis=0):
+                warning_list.append(f'{MONOTONIC_VALUES_ERROR[0]}{variable.name}{MONOTONIC_VALUES_ERROR[1]}')
+        else:
+            warning_list.append(f'{MULTIDIMENSIONAL_WARNING}')
+    else:
+        warning_list.append(f'{CANT_GET_VALUES_WARNING[0]}{variable.name}{CANT_GET_VALUES_WARNING[1]}')
+    return warning_list
 
 
 def _check_spatial_variables(variable_ordered_dictionary):

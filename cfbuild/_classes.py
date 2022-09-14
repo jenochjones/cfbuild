@@ -2,6 +2,8 @@ import netCDF4
 import os
 import io
 
+import numpy as np
+
 from importlib import resources
 from lxml import etree
 
@@ -9,6 +11,7 @@ from ._create_dataset import from_file
 from ._create_ncml import create_ncml
 from ._create_nc import create_or_update_nc_file
 from ._constants import STANDARD_NAME_TABLE_LOCATION
+from ._aggrigate_to_ncml import _agg_to_ncml
 
 
 class Dataset:
@@ -57,7 +60,7 @@ class Dataset:
                 self.read_filepath = dataset_or_filepath
                 from_file(self)
             else:
-                print('file does not exist')
+                raise FileNotFoundError('file does not exist')
                 # self.dataset = netCDF4.Dataset(self.read_filepath, mode=write_mode, clobber=clobber)
         elif type(dataset_or_filepath) == netCDF4._netCDF4.Dataset:
             self.read_filepath = dataset_or_filepath.filepath()
@@ -87,9 +90,9 @@ class Dataset:
     def attribute(self, name: str, value: str):
         self.attributes[name] = value
 
-    def variable(self, name: str, data_type: str, dimensions: tuple, variable_type: str or None = None):
-                 #values: np.array or None = None, create_variable: bool = False):
-        new_variable = Variable(name, data_type, dimensions, variable_type)
+    def variable(self, name: str, data_type: str, dimensions: tuple, variable_type: str or None = None,
+                 values: np.array or None = None):
+        new_variable = Variable(name, data_type, dimensions, variable_type, values)
         self.variables.append(new_variable)
         return new_variable
 
@@ -119,9 +122,9 @@ class Group:
         self.groups.append(new_group)
         return new_group
 
-    def variable(self, name: str, data_type: str, dimensions: tuple, variable_type: str or None = None):
-                 # values: np.array or None = None, create_variable: bool = False):
-        new_variable = Variable(name, data_type, dimensions, variable_type)
+    def variable(self, name: str, data_type: str, dimensions: tuple, variable_type: str or None = None,
+                 values: np.array or None = None):
+        new_variable = Variable(name, data_type, dimensions, variable_type, values)
         # variable_in_dataset = self.dataset.createVariable(name, data_type, dimensions)
         # variable_in_dataset[:] = values
         self.variables.append(new_variable)
@@ -136,12 +139,13 @@ class Group:
 
 
 class Variable:
-    def __init__(self, name: str, data_type: str, dimensions: tuple, variable_type: list or None = None):
+    def __init__(self, name: str, data_type: str, dimensions: tuple, variable_type: list or None = None,
+                 values: np.array or None = None):
                  # values: np.array or None = None, create_variable: bool = False):
         self.name = name
         self.data_type = data_type
         self.dimensions = dimensions
-        # self.values = values
+        self.values = values
         self.attributes = {}
         self.variable_type = variable_type
         # self.create_variable = create_variable
@@ -183,3 +187,6 @@ class NCML:
     def refresh_file(self):
         print('refreshing file')
         return self
+    
+def ncml_aggrigation(path_to_catalog: str, remote_or_local: str):
+    _agg_to_ncml(path_to_catalog, remote_or_local)

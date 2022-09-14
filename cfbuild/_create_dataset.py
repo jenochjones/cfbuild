@@ -23,9 +23,8 @@ def from_file(cfbuild_dataset):
             else:
                 variable_type = VARIABLE_TYPE_INDICATORS['U']
 
-                # variable_values = netcdf4_dataset_group.variables[variable][:]
             new_variable = cfbuild_dataset_group.variable(variable_name, variable_data_type,
-                                                          variable_dimensions, variable_type)
+                                                          variable_dimensions, variable_type, None)
 
             for key in netcdf4_dataset_group.variables[variable].__dict__:
                 name = key

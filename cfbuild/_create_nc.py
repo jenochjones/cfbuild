@@ -12,6 +12,29 @@ def create_or_update_nc_file(ncml_object, final_netcdf4_dataset, original_datase
             return False
         return True
 
+    def check_element_for_values(xml_group, variable_shape, dimensions):
+        has_values = False
+        variable_values = None
+
+        for element in xml_group:
+            if element.tag.split('}')[-1] == 'values':
+                has_values = True
+
+                if len(variable_shape) == 1:
+                    length = dimensions[variable_shape[0]].size
+                    start = float(element.attrib['start'])
+                    step = float(element.attrib['incr'])
+                    dimension_list = []
+
+                    for number in range(length):
+                        dimension_list.append(start)
+                        start += step
+
+                    variable_values = numpy.array(dimension_list)
+                else:
+                    raise Exception
+        return has_values, variable_values
+
     def parse_attribute_value(element):
         if validate_json(element.attrib['value']):
             if element.attrib['value'][0] == '[' and element.attrib['value'][-1] == ']':
@@ -68,10 +91,17 @@ def create_or_update_nc_file(ncml_object, final_netcdf4_dataset, original_datase
                         final_netcdf4_dataset_group.createDimension(dimname=element.attrib['name'], size=dimension_size)
 
                 elif element.tag.split('}')[-1] == 'variable':
-                    try:
-                        variable_values = original_dataset_group.variables[element.attrib['name']][:]
-                    except Exception as e:
-                        print(e)
+                    has_values, element_values = check_element_for_values(element, eval(element.attrib['shape']),
+                                                                          final_netcdf4_dataset_group.dimensions)
+                    if has_values:
+                        variable_values = element_values
+                    elif variable_dictionary[element.attrib['name']].values is None:
+                        try:
+                            variable_values = original_dataset_group.variables[element.attrib['name']][:]
+                        except Exception as e:
+                            print(e)
+                    else:
+                        variable_values = variable_dictionary[element.attrib['name']].values
 
                     if element.attrib['name'] in final_netcdf4_dataset_group.variables:
                         attributes = add_attributes(element,

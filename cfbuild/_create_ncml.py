@@ -49,11 +49,14 @@ def create_ncml(ds):
 
         merged_attributes = sort_and_merge_attribute_lists(required_attributes, current_variable_attributes)
 
-        try:
-            variable_values = ds.dataset.variables[variable.name][:]
-        except Exception as e:
-            variable_values = None
-            print(e)
+        if variable.values is not None:
+            variable_values = variable.values
+        else:
+            try:
+                variable_values = ds.dataset.variables[variable.name][:]
+            except Exception as e:
+                variable_values = None
+                print(e)
 
         merged_attributes = _check_attribute_values(merged_attributes, variable, ds.standard_name_table, variable_values)
 
@@ -124,11 +127,19 @@ def create_ncml(ds):
 
         for index, variable in enumerate(variable_ordered_dictionary):
 
-            warning_list = _check_variable(variable)
+            if variable.values is not None:
+                variable_values = variable.values
+            else:
+                try:
+                    variable_values = ds.dataset[variable.name].values
+                except:
+                    variable_values = None
+
+            warning_list = _check_variable(variable, variable_values)
 
             for warning in warning_list:
                 xml_comment = etree.Comment(warning)
-                xml_comment.tail = '\n' + '\t' * (indent_level + 1)
+                xml_comment.tail = '\n' + '\t' * indent_level
                 group_element.append(xml_comment)
 
             if str(variable.data_type) not in DATA_TYPES:

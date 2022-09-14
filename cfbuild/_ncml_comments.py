@@ -53,6 +53,15 @@ DATA_TYPE_WARNING = ['WARNING - The variable datatype "', '" is  not compatible 
 ADD_GRID_MAPPING_VARIABLE = ['WARNING - a grid mapping variable should be added that specifies the coordinate'
                              ' reference system used.']
 
+MISSING_VALUES_ERROR = ['ERROR - The coordinate variable (', ') is missing values. Please specify new values.']
+
+MONOTONIC_VALUES_ERROR = ['ERROR - The coordinate variable (', ') must have monotonically increasing values. '
+                                                               'Please specify new values.']
+
+CANT_GET_VALUES_WARNING = ['INFO - Cannot check values for ', '.']
+
+MULTIDIMENSIONAL_WARNING = 'WARNING - Coordinate variables should be one dimensional.'
+
 VARIABLE_COMMENTS = {
     VARIABLE_TYPE_INDICATORS['T']: T_COORDINATE_VARIABLE,
     VARIABLE_TYPE_INDICATORS['Z']: Z_COORDINATE_VARIABLE,
