@@ -71,9 +71,9 @@ def create_or_update_nc_file(ncml_object, final_netcdf4_dataset, original_datase
         return attribute_dictionary
 
     def iterate_group(xml_element, final_netcdf4_dataset_group, cfbuild_dataset_group, original_dataset_group):
-        variable_dictionary = {}
-        for cfbuild_variable in cfbuild_dataset_group.variables:
-            variable_dictionary[cfbuild_variable.name] = cfbuild_variable
+        variable_dictionary = cfbuild_dataset_group.variables
+        # for cfbuild_variable in cfbuild_dataset_group.variables:
+        #     variable_dictionary[cfbuild_variable.name] = cfbuild_variable
 
         for element in xml_element:
 
@@ -121,7 +121,10 @@ def create_or_update_nc_file(ncml_object, final_netcdf4_dataset, original_datase
                                 else:
                                     fill_value = attributes['_FillValue']
                             else:
-                                fill_value = variable_values.fill_value
+                                if not numpy.ma.is_masked(variable_values):
+                                    fill_value = variable_values.fill_value
+                                else:
+                                    fill_value = None
 
                             new_variable = final_netcdf4_dataset_group.createVariable(varname=element.attrib['name'],
                                                                                       datatype=element.attrib['type'],

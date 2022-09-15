@@ -137,7 +137,7 @@ def sort_variables(variables):
 
     for type_indicator in LIST_OF_VARIABLE_NAMES:
         for variable in variables:
-            if variable.variable_type == type_indicator:
-                sorted_variable_list.append(variable)
+            if variables[variable].variable_type == type_indicator:
+                sorted_variable_list.append(variables[variable])
 
     return sorted_variable_list

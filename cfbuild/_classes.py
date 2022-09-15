@@ -43,11 +43,11 @@ class Dataset:
         self.conventions = conventions
         self.data_structure = {}
         self.dataset = None
-        self.dimensions = []
+        self.dimensions = {}
         self.groups = []
         self.ordered_variables = []
         self.read_filepath = None
-        self.variables = []
+        self.variables = {}
 
         with resources.open_binary('cfbuild', STANDARD_NAME_TABLE_LOCATION) as file_path:
             table = file_path.read()
@@ -93,12 +93,12 @@ class Dataset:
     def variable(self, name: str, data_type: str, dimensions: tuple, variable_type: str or None = None,
                  values: np.array or None = None):
         new_variable = Variable(name, data_type, dimensions, variable_type, values)
-        self.variables.append(new_variable)
+        self.variables[name] = new_variable
         return new_variable
 
     def dimension(self, name: str, length: int or None):
         new_dimension = Dimension(name, length)
-        self.dimensions.append(new_dimension)
+        self.dimensions[name] = new_dimension
         return new_dimension
 
     def close(self):
@@ -127,38 +127,33 @@ class Group:
         new_variable = Variable(name, data_type, dimensions, variable_type, values)
         # variable_in_dataset = self.dataset.createVariable(name, data_type, dimensions)
         # variable_in_dataset[:] = values
-        self.variables.append(new_variable)
+        self.variables[name] = new_variable
         return new_variable
 
     def dimension(self, name: str, length: int or None):
         new_dimension = Dimension(name, length)
-        self.dimensions.append(new_dimension)
-        self.dataset.createDimension(name, length)
-
+        self.dimensions[name] = new_dimension
         return new_dimension
 
 
 class Variable:
     def __init__(self, name: str, data_type: str, dimensions: tuple, variable_type: list or None = None,
                  values: np.array or None = None):
-                 # values: np.array or None = None, create_variable: bool = False):
         self.name = name
         self.data_type = data_type
         self.dimensions = dimensions
         self.values = values
         self.attributes = {}
         self.variable_type = variable_type
-        # self.create_variable = create_variable
 
     def attribute(self, name: str, value: str):
         self.attributes[name] = value
 
 
 class Dimension:
-    def __init__(self, name: str, length: str or int): #, values: np.array):
+    def __init__(self, name: str, length: str or int):
         self.name = name
         self.length = length
-        # self.values = values
 
 
 class NCML:

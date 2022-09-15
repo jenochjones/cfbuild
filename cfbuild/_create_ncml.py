@@ -107,8 +107,8 @@ def create_ncml(ds):
         group_element.append(xml_comment)
 
         for index, dimension in enumerate(group.dimensions):
-            dimension_element = etree.SubElement(group_element, 'dimension', name=dimension.name,
-                                                 length=str(dimension.length))
+            dimension_element = etree.SubElement(group_element, 'dimension', name=group.dimensions[dimension].name,
+                                                 length=str(group.dimensions[dimension].length))
             if index + 1 < len(group.dimensions):
                 dimension_element.tail = '\n' + '\t' * indent_level
             else:
@@ -131,7 +131,7 @@ def create_ncml(ds):
                 variable_values = variable.values
             else:
                 try:
-                    variable_values = ds.dataset[variable.name].values
+                    variable_values = ds.dataset[variable.name][:]
                 except:
                     variable_values = None
 
