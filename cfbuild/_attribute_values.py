@@ -176,22 +176,27 @@ def _check_attribute_values(merged_attributes, variable, standard_name_table, va
                     merged_attributes['actual_range'] = [actual_min, actual_max]
 
     if 'valid_range' in merged_attributes and 'actual_range' in merged_attributes:
-        if merged_attributes['actual_range'][0] <= merged_attributes['valid_range'][0] or \
-                merged_attributes['actual_range'][1] >= merged_attributes['valid_range'][1]:
-            merged_attributes['valid_range'] = {'value': merged_attributes['valid_range'],
-                                                'comment': VALID_RANGE_WARNING}
+        if not isinstance(merged_attributes['actual_range'], str) and not \
+                isinstance(merged_attributes['valid_range'], str):
+            if merged_attributes['actual_range'][0] <= merged_attributes['valid_range'][0] or \
+                    merged_attributes['actual_range'][1] >= merged_attributes['valid_range'][1]:
+                merged_attributes['valid_range'] = {'value': merged_attributes['valid_range'],
+                                                    'comment': VALID_RANGE_WARNING}
 
     if '_FillValue' in merged_attributes and 'actual_range' in merged_attributes:
-        if merged_attributes['_FillValue'] >= merged_attributes['valid_range'][0] and \
-                merged_attributes['_FillValue'][1] <= merged_attributes['valid_range'][1]:
-            merged_attributes['_FillValue'] = {'value': merged_attributes['_FillValue'],
-                                               'comment': FILL_VALUE_WARNING}
+        if not isinstance(merged_attributes['_FillValue'], str) and not \
+                isinstance(merged_attributes['valid_range'], str):
+            if merged_attributes['valid_range'][0] <= merged_attributes['_FillValue'] <= \
+                    merged_attributes['valid_range'][1]:
+                merged_attributes['_FillValue'] = {'value': merged_attributes['_FillValue'],
+                                                   'comment': FILL_VALUE_WARNING}
 
     if 'missing_value' in merged_attributes and 'actual_range' in merged_attributes:
-        if merged_attributes['missing_value'] >= merged_attributes['valid_range'][0] and \
-                merged_attributes['missing_value'][1] <= merged_attributes['valid_range'][1]:
-            merged_attributes['missing_value'] = {'value': merged_attributes['missing_value'],
-                                                'comment': MISSING_VALUE_WARNING}
+        if not isinstance(merged_attributes['missing_value'], str) and not \
+                isinstance(merged_attributes['valid_range'], str):
+            if merged_attributes['valid_range'][0] <= merged_attributes['missing_value'] <= merged_attributes['valid_range'][1]:
+                merged_attributes['missing_value'] = {'value': merged_attributes['missing_value'],
+                                                    'comment': MISSING_VALUE_WARNING}
 
     return merged_attributes
 
@@ -343,13 +348,21 @@ def _determine_global_attributes_for_given_conventions(conventions, current_conv
         group.attributes['Conventions'] = ', '.join(current_conventions)
 
     else:
-        # GLOBAL_ATTRIBUTES['ACDD_ATTRIBUTES_REQUIRED'].pop('title')
-        # GLOBAL_ATTRIBUTES['ACDD_ATTRIBUTES_REQUIRED'].pop('Conventions')
-        GLOBAL_ATTRIBUTES['ACDD_ATTRIBUTES_RECOMMENDED'].pop('source')
-        GLOBAL_ATTRIBUTES['ACDD_ATTRIBUTES_RECOMMENDED'].pop('comment')
-        GLOBAL_ATTRIBUTES['ACDD_ATTRIBUTES_RECOMMENDED'].pop('institution')
-        GLOBAL_ATTRIBUTES['ACDD_ATTRIBUTES_RECOMMENDED']['date_created'] = datetime.now().strftime('%m/%d/%Y')
-        GLOBAL_ATTRIBUTES['ACDD_ATTRIBUTES_SUGGESTED']['date_metadata_modified'] = datetime.now().strftime('%m/%d/%Y')
+        if hasattr(GLOBAL_ATTRIBUTES['ACDD_ATTRIBUTES_REQUIRED'], 'title'):
+            GLOBAL_ATTRIBUTES['ACDD_ATTRIBUTES_REQUIRED'].pop('title')
+        if hasattr(GLOBAL_ATTRIBUTES['ACDD_ATTRIBUTES_REQUIRED'], 'Conventions'):
+            GLOBAL_ATTRIBUTES['ACDD_ATTRIBUTES_REQUIRED'].pop('Conventions')
+        if hasattr(GLOBAL_ATTRIBUTES['ACDD_ATTRIBUTES_REQUIRED'], 'source'):
+            GLOBAL_ATTRIBUTES['ACDD_ATTRIBUTES_RECOMMENDED'].pop('source')
+        if hasattr(GLOBAL_ATTRIBUTES['ACDD_ATTRIBUTES_REQUIRED'], 'comment'):
+            GLOBAL_ATTRIBUTES['ACDD_ATTRIBUTES_RECOMMENDED'].pop('comment')
+        if hasattr(GLOBAL_ATTRIBUTES['ACDD_ATTRIBUTES_REQUIRED'], 'institution'):
+            GLOBAL_ATTRIBUTES['ACDD_ATTRIBUTES_RECOMMENDED'].pop('institution')
+        if hasattr(GLOBAL_ATTRIBUTES['ACDD_ATTRIBUTES_REQUIRED'], 'date_created'):
+            GLOBAL_ATTRIBUTES['ACDD_ATTRIBUTES_RECOMMENDED']['date_created'] = datetime.now().strftime('%m/%d/%Y')
+        if hasattr(GLOBAL_ATTRIBUTES['ACDD_ATTRIBUTES_REQUIRED'], 'date_metadata_modified'):
+            GLOBAL_ATTRIBUTES['ACDD_ATTRIBUTES_SUGGESTED']['date_metadata_modified'] = datetime.now().strftime('%m/%d/%Y')
+
         required_attributes = {**GLOBAL_ATTRIBUTES['CF_GLOBAL_ATTRIBUTES'],
                                **GLOBAL_ATTRIBUTES['ACDD_ATTRIBUTES_REQUIRED'],
                                **GLOBAL_ATTRIBUTES['ACDD_ATTRIBUTES_RECOMMENDED'],
