@@ -1,12 +1,12 @@
 import numpy
-import datetime
+from datetime import datetime
 
 from cfunits import Units
 from lxml import etree
 
 from ._ncml_comments import UNITS_WARNING, STANDARD_NAME_WARNING, TEMPORAL_UNITS_WARNING, \
     OPENDAP_RESERVED_KEYWORDS_WARNING, MISSING_VALUES_ERROR, MONOTONIC_VALUES_ERROR, \
-    CANT_GET_VALUES_WARNING, MULTIDIMENSIONAL_WARNING
+    CANT_GET_VALUES_WARNING, MULTIDIMENSIONAL_WARNING, VALID_RANGE_WARNING, FILL_VALUE_WARNING, MISSING_VALUE_WARNING
 from ._constants import CONVENTION_VERSIONS, WARNING_MESSAGE, GLOBAL_ATTRIBUTES, UNITS, \
     OPENDAP_RESERVED_KEYWORDS, VARIABLE_TYPE_INDICATORS, COORDINATE_VARIABLE_LIST
 from ._ncml_comments import ADD_GRID_MAPPING_VARIABLE
@@ -175,6 +175,24 @@ def _check_attribute_values(merged_attributes, variable, standard_name_table, va
 
                     merged_attributes['actual_range'] = [actual_min, actual_max]
 
+    if 'valid_range' in merged_attributes and 'actual_range' in merged_attributes:
+        if merged_attributes['actual_range'][0] <= merged_attributes['valid_range'][0] or \
+                merged_attributes['actual_range'][1] >= merged_attributes['valid_range'][1]:
+            merged_attributes['valid_range'] = {'value': merged_attributes['valid_range'],
+                                                'comment': VALID_RANGE_WARNING}
+
+    if '_FillValue' in merged_attributes and 'actual_range' in merged_attributes:
+        if merged_attributes['_FillValue'] >= merged_attributes['valid_range'][0] and \
+                merged_attributes['_FillValue'][1] <= merged_attributes['valid_range'][1]:
+            merged_attributes['_FillValue'] = {'value': merged_attributes['_FillValue'],
+                                               'comment': FILL_VALUE_WARNING}
+
+    if 'missing_value' in merged_attributes and 'actual_range' in merged_attributes:
+        if merged_attributes['missing_value'] >= merged_attributes['valid_range'][0] and \
+                merged_attributes['missing_value'][1] <= merged_attributes['valid_range'][1]:
+            merged_attributes['missing_value'] = {'value': merged_attributes['missing_value'],
+                                                'comment': MISSING_VALUE_WARNING}
+
     return merged_attributes
 
 
@@ -325,8 +343,8 @@ def _determine_global_attributes_for_given_conventions(conventions, current_conv
         group.attributes['Conventions'] = ', '.join(current_conventions)
 
     else:
-        GLOBAL_ATTRIBUTES['ACDD_ATTRIBUTES_REQUIRED'].pop('title')
-        GLOBAL_ATTRIBUTES['ACDD_ATTRIBUTES_REQUIRED'].pop('Conventions')
+        # GLOBAL_ATTRIBUTES['ACDD_ATTRIBUTES_REQUIRED'].pop('title')
+        # GLOBAL_ATTRIBUTES['ACDD_ATTRIBUTES_REQUIRED'].pop('Conventions')
         GLOBAL_ATTRIBUTES['ACDD_ATTRIBUTES_RECOMMENDED'].pop('source')
         GLOBAL_ATTRIBUTES['ACDD_ATTRIBUTES_RECOMMENDED'].pop('comment')
         GLOBAL_ATTRIBUTES['ACDD_ATTRIBUTES_RECOMMENDED'].pop('institution')

@@ -1,11 +1,10 @@
 from lxml import etree
-from datetime import datetime
 
 from ._constants import GLOBAL_ATTRIBUTES
 from ._constants import DATA_TYPES, CONVENTION_VERSIONS, CF_DATA_TYPE_ATTRIBUTES, VARIABLE_TYPE_INDICATORS
 from ._variable_identification import sort_and_merge_attribute_lists, sort_variables
 from ._attribute_values import _check_attribute_values, _check_spatial_variables, _determine_global_attributes_for_given_conventions, _check_variable
-from ._ncml_comments import GLOBAL_ATTRIBUTES, DIMENSIONS, DATA_TYPE_WARNING, VARIABLE_COMMENTS
+from ._ncml_comments import GLOBAL_ATTRIBUTES_COMMENT, DIMENSIONS, DATA_TYPE_WARNING, VARIABLE_COMMENTS
 
 
 def create_ncml(ds):
@@ -178,7 +177,7 @@ def create_ncml(ds):
                          location=ds.read_filepath)
     root.text = '\n\t'
 
-    comment = etree.Comment(GLOBAL_ATTRIBUTES)
+    comment = etree.Comment(GLOBAL_ATTRIBUTES_COMMENT)
     comment.tail = '\n\t'
     root.append(comment)
 

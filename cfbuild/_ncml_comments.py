@@ -1,6 +1,6 @@
 from ._constants import VARIABLE_TYPE_INDICATORS
 
-GLOBAL_ATTRIBUTES = 'These are global attributes'
+GLOBAL_ATTRIBUTES_COMMENT = 'These are global attributes'
 
 DIMENSIONS = 'These are dimensions'
 
@@ -61,6 +61,14 @@ MONOTONIC_VALUES_ERROR = ['ERROR - The coordinate variable (', ') must have mono
 CANT_GET_VALUES_WARNING = ['INFO - Cannot check values for ', '.']
 
 MULTIDIMENSIONAL_WARNING = 'WARNING - Coordinate variables should be one dimensional.'
+
+VALID_RANGE_WARNING = 'WARNING - The actual range of the data is outside the valid range'
+
+FILL_VALUE_WARNING = 'WARNING - The _FillValue is within the valid data range. Please specify a _FillValue outside ' \
+                     'the valid data range.'
+
+MISSING_VALUE_WARNING = 'WARNING - The missing_value is within the valid data range. Please specify a missing_value ' \
+                        'outside the valid data range.'
 
 VARIABLE_COMMENTS = {
     VARIABLE_TYPE_INDICATORS['T']: T_COORDINATE_VARIABLE,

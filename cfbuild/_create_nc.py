@@ -64,16 +64,17 @@ def create_or_update_nc_file(ncml_object, final_netcdf4_dataset, original_datase
             if element.tag is not etree.Comment:
                 if element.tag.split('}')[-1] == 'attribute':
                     if element.attrib['name'] not in netcdf_element.ncattrs():
-                        value = parse_attribute_value(element)
-                        attribute_dictionary[element.attrib['name']] = value
+                        if element.attrib['name'] == 'units':
+                            attribute_dictionary[element.attrib['name']] = str(element.attrib['value'])
+                        else:
+                            value = parse_attribute_value(element)
+                            attribute_dictionary[element.attrib['name']] = value
 
         netcdf_element.setncatts(attribute_dictionary)
         return attribute_dictionary
 
     def iterate_group(xml_element, final_netcdf4_dataset_group, cfbuild_dataset_group, original_dataset_group):
         variable_dictionary = cfbuild_dataset_group.variables
-        # for cfbuild_variable in cfbuild_dataset_group.variables:
-        #     variable_dictionary[cfbuild_variable.name] = cfbuild_variable
 
         for element in xml_element:
 
@@ -139,7 +140,6 @@ def create_or_update_nc_file(ncml_object, final_netcdf4_dataset, original_datase
                                     values.astype(str(element.attrib['type']))
                             else:
                                 new_variable[:] = variable_values
-                            # add_attributes(element, new_variable)
 
                 elif element.tag.split('}')[-1] == 'group':
                     new_group = final_netcdf4_dataset_group.createGroup(groupname=element.attrib['name'])

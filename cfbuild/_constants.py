@@ -50,7 +50,8 @@ ACDD_ATTRIBUTES_REQUIRED = {
     'title': WARNING_MESSAGE + 'A succinct description of what is in the dataset',
     'summary': WARNING_MESSAGE + 'A paragraph describing the dataset, analogous to an abstract for a paper',
     'keywords': WARNING_MESSAGE + 'A comma-seperated list of key words and/or phrases',
-    'Conventions': 'ACDD'
+    'Conventions': 'ACDD-1.3',
+    'test': 'a test attribute'
     }
 
 ACDD_ATTRIBUTES_RECOMMENDED = {
@@ -156,7 +157,7 @@ CF_GLOBAL_ATTRIBUTES = {
     'featureType': WARNING_MESSAGE + 'Specifies the type of data in the file/group. Set as \'point\', \'timeSeries\','
                                      ' \'trajectory\', \'profile\', \'featureType\', \'timeSeriesProfile\', or '
                                      '\'trajectoryProfile\'',
-    'Conventions': 'CF-1.8, ACDD-1.3'
+    'Conventions': 'CF-1.9, ACDD-1.3'
     }
 
 CF_GROUP_ATTRIBUTES = {
