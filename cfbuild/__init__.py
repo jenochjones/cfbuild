@@ -1,6 +1,6 @@
-from cfbuild._classes import Dataset, NCML, ncml_aggrigation
+from cfbuild._classes import Dataset, NCML
 
-__all__ = ['Dataset', 'NCML', 'ncml_aggrigation']
+__all__ = ['Dataset', 'NCML']
 __author__ = 'J Enoch Jones'
 __docs__ = ''
 __doi__ = ''

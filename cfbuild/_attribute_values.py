@@ -208,7 +208,7 @@ def _check_coordinate_variables(variable, variable_values):
             array_sum = numpy.sum(variable_values)
             if numpy.isnan(array_sum) or numpy.ma.is_masked(variable_values):
                 warning_list.append(f'{MISSING_VALUES_ERROR[0]}{variable.name}{MISSING_VALUES_ERROR[1]}')
-            if not numpy.all(variable_values[1:] > variable_values[:-1], axis=0):
+            if not numpy.all(variable_values[1:] > variable_values[:-1], axis=0) or not numpy.all(variable_values[1:] < variable_values[:-1], axis=0):
                 warning_list.append(f'{MONOTONIC_VALUES_ERROR[0]}{variable.name}{MONOTONIC_VALUES_ERROR[1]}')
         else:
             warning_list.append(f'{MULTIDIMENSIONAL_WARNING}')
