@@ -2,6 +2,8 @@
 
 WARNING_MESSAGE = '!!!CHANGE ME!!! - '
 
+NEW_VARIABLE_NAME = WARNING_MESSAGE + 'new variable name'
+
 STANDARD_NAME_TABLE_LOCATION = 'cf-standard-name-table.xml'
 
 CONVENTION_VERSIONS = ['CF-1.9', 'ACDD-1.3']
@@ -46,37 +48,50 @@ COORDINATE_VARIABLE_LIST = ['Coordinate', 'Time Coordinate', 'X Coordinate', 'Y 
 
 # GLOBAL ATTRIBUTES ##################################################################################################
 
-ACDD_ATTRIBUTES_REQUIRED = {
+ACDD_ATTRIBUTES = {
     'title': WARNING_MESSAGE + 'A succinct description of what is in the dataset',
     'summary': WARNING_MESSAGE + 'A paragraph describing the dataset, analogous to an abstract for a paper',
+    'comment':  WARNING_MESSAGE + 'Miscellaneous information about the data, not captured elsewhere',  # Duplicate with CF
+    'project':  WARNING_MESSAGE + 'The name of the project(s) principally responsible for originating this data',
+    'program': WARNING_MESSAGE + 'The overarching program(s) of which the dataset is a part',
     'keywords': WARNING_MESSAGE + 'A comma-seperated list of key words and/or phrases',
-    'Conventions': 'ACDD-1.3',
-    'test': 'a test attribute'
-    }
-
-ACDD_ATTRIBUTES_RECOMMENDED = {
+    'keywords_vocabulary': WARNING_MESSAGE + 'If you are using a controlled vocabulary for the words/phrases in your '
+                                             '\'keywords\' attribute, this is the unique name or identifier of the '
+                                             'vocabulary from which keywords are taken',
+    'standard_name_vocabulary': 'CF Standard Name Table (v79, 19 March 2022)',
+    'references': WARNING_MESSAGE + 'Published or web-based references that describe the data or methods used to '
+                                    'produce it',  # Duplicate with CF
+    'metadata_link': WARNING_MESSAGE + 'A URL that gives the location of more complete metadata',
     'id': WARNING_MESSAGE + 'An identifier for the data set, provided by and unique within its naming authority',
     'naming_authority': WARNING_MESSAGE + 'The organization that provides the initial id (see above) for the dataset',
-    'history': WARNING_MESSAGE + 'Provides an audit trail for modifications to the original data',
     'source':  WARNING_MESSAGE + 'The method of production of the original data',  # Duplicate with CF
     'processing_level':  WARNING_MESSAGE + 'A textual description of the processing (or quality control)'
                                            ' level of the data',
-    'comment':  WARNING_MESSAGE + 'Miscellaneous information about the data, not captured elsewhere',  # Duplicate with CF
-    'acknowledgement':  WARNING_MESSAGE + 'TA place to acknowledge various types of support for the project that'
-                                          ' produced this data',
+    'product_version': WARNING_MESSAGE + 'Version identifier of the data file or product as assigned by the data '
+                                         'creator',
     'license':  WARNING_MESSAGE + 'Provide the URL to a standard or specific license, enter \'Freely Distributed\' or '
                                   '\'None\', or describe any restrictions to data access and distribution in free text',
-    'standard_name_vocabulary': 'CF Standard Name Table (v79, 19 March 2022)',
-    'date_created':  '',  # set to today WARNING_MESSAGE + 'The date on which this version of the data was created',
+    'date_created':  WARNING_MESSAGE + 'The date on which this version of the data was created',
+    'date_modified': WARNING_MESSAGE + 'The date on which the data was last modified. Note that this applies just to '
+                                       'the data, not the metadata',
+    'date_issued': WARNING_MESSAGE + 'The date on which this data (including all modifications) was formally issued '
+                                     '(i.e., made available to a wider audience)',
+    'date_metadata_modified': WARNING_MESSAGE + 'The date on which the metadata was last modified',
+    'history': WARNING_MESSAGE + 'Provides an audit trail for modifications to the original data',
+    'creator_type': WARNING_MESSAGE + 'Specifies type of creator with one of the following: \'person\', \'group\', '
+                                      '\'institution\', or \'position\'',
     'creator_name':  WARNING_MESSAGE + 'The name of the person (or other creator type specified by the creator_type '
                                        'attribute) principally responsible for creating this data',
     'creator_email':  WARNING_MESSAGE + 'The email address of the person (or other creator type specified by the '
                                         'creator_type attribute) principally responsible for creating this data',
-    'creator_url':  WARNING_MESSAGE + '	The URL of the person (or other creator type specified by the creator_type '
+    'creator_url':  WARNING_MESSAGE + 'The URL of the person (or other creator type specified by the creator_type '
                                       'attribute) principally responsible for creating this data',
+    'creator_institution': WARNING_MESSAGE + 'The institution of the creator; should uniquely identify the creators '
+                                             'institution',
     'institution':  WARNING_MESSAGE + 'The name of the institution principally responsible for originating this data. '
                                       'This attribute is recommended by the CF convention',  # Duplicate with CF
-    'project':  WARNING_MESSAGE + 'The name of the project(s) principally responsible for originating this data',
+    'publisher_institution': WARNING_MESSAGE + 'The institution that presented the data file or equivalent product '
+                                               'to users',
     'publisher_name':  WARNING_MESSAGE + 'The name of the person (or other entity specified by the publisher_type '
                                          'attribute) responsible for publishing the data file or product to users, '
                                          'with its current metadata and format',
@@ -86,57 +101,59 @@ ACDD_ATTRIBUTES_RECOMMENDED = {
     'publisher_url':  WARNING_MESSAGE + 'The URL of the person (or other entity specified by the publisher_type '
                                         'attribute) responsible for publishing the data file or product to users, with '
                                         'its current metadata and format',
-    # these attributes only make sence if the file only has one domain
-    # 'geospatial_bounds':  WARNING_MESSAGE + 'TDescribes the datas 2D or 3D geospatial extent in OGCs Well-Known Text (WKT) Geometry format (reference the OGC Simple Feature Access (SFA) specification)',
-    # 'geospatial_bounds_crs':  WARNING_MESSAGE + 'The coordinate reference system (CRS) of the point coordinates in the geospatial_bounds attribute',
-    # 'geospatial_bounds_vertical_crs':  WARNING_MESSAGE + 'The vertical coordinate reference system (CRS) for the Z axis of the point coordinates in the geospatial_bounds attribute',
-    # 'geospatial_lat_min':  WARNING_MESSAGE + 'Describes a simple lower latitude limit; may be part of a 2- or 3-dimensional bounding region', # Set from dimensional data????
-    # 'geospatial_lat_max':  WARNING_MESSAGE + 'Describes a simple upper latitude limit; may be part of a 2- or 3-dimensional bounding region', # Set from dimensional data????
-    # 'geospatial_lon_min':  WARNING_MESSAGE + 'Describes a simple longitude limit; may be part of a 2- or 3-dimensional bounding region', # Set from dimensional data????
-    # 'geospatial_lon_max':  WARNING_MESSAGE + 'TDescribes a simple longitude limit; may be part of a 2- or 3-dimensional bounding region', # Set from dimensional data????
-    # 'geospatial_vertical_min':  WARNING_MESSAGE + 'Describes the numerically smaller vertical limit; may be part of a 2- or 3-dimensional bounding region',
-    # 'geospatial_vertical_max':  WARNING_MESSAGE + 'Describes the numerically larger vertical limit; may be part of a 2- or 3-dimensional bounding region',
-    # 'geospatial_vertical_positive':  WARNING_MESSAGE + 'One of \'up\' or \'down\'', # Mirrors CF positive variable attribute
-    # 'time_coverage_start':  WARNING_MESSAGE + 'Describes the time of the first data point in the data set', # Set from dimensional data????
-    # 'time_coverage_end':  WARNING_MESSAGE + 'Describes the time of the last data point in the data set', # Set from dimensional data????
-    # 'time_coverage_duration':  WARNING_MESSAGE + 'Describes the duration of the data set', # Set from dimensional data????
-    # 'time_coverage_resolution':  WARNING_MESSAGE + 'Describes the targeted time period between each value in the data set'
-    }
-
-ACDD_ATTRIBUTES_SUGGESTED = {
-    'creator_type': WARNING_MESSAGE + 'Specifies type of creator with one of the following: "person", "group", '
-                                      '"institution", or "position"',  # Defailt: person???
-    'creator_institution': WARNING_MESSAGE + 'The institution of the creator; should uniquely identify the creators '
-                                             'institution',
     'publisher_type': WARNING_MESSAGE + 'a comma-seperated list of key words and/or phrases',
-    'publisher_institution': WARNING_MESSAGE + 'The institution that presented the data file or equivalent product '
-                                               'to users',
-    'program': WARNING_MESSAGE + 'The overarching program(s) of which the dataset is a part',
     'contributor_name': WARNING_MESSAGE + 'The name of any individuals, projects, or institutions that contributed '
                                           'to the creation of this data',
     'contributor_role': WARNING_MESSAGE + 'The role of any individuals, projects, or institutions that contributed '
-                                          'to the creation of this data'
-    
-    # these attributes only make sence if the file only has one domain
-    # 'geospatial_lat_units': WARNING_MESSAGE + 'Units for the latitude axis described in "geospatial_lat_min" and "geospatial_lat_max" attributes',
-    # 'geospatial_lat_resolution': WARNING_MESSAGE + 'Information about the targeted spacing of points in latitude',
-    # 'geospatial_lon_units': WARNING_MESSAGE + 'Units for the longitude axis described in "geospatial_lon_min" and "geospatial_lon_max" attributes',
-    # 'geospatial_lon_resolution': WARNING_MESSAGE + 'Information about the targeted spacing of points in longitude',
-    # 'geospatial_vertical_units': WARNING_MESSAGE + 'Units for the vertical axis described in "geospatial_vertical_min" and "geospatial_vertical_max" attributes',
-    # 'geospatial_vertical_resolution': WARNING_MESSAGE + 'Information about the targeted vertical spacing of points',
-    # ---------------------------------------------------------------
-    # 'date_modified': WARNING_MESSAGE + 'The date on which the data was last modified. Note that this applies just to the data, not the metadata',
-    # 'date_issued': WARNING_MESSAGE + 'The date on which this data (including all modifications) was formally issued (i.e., made available to a wider audience)',
-    # 'date_metadata_modified': '', # set as today WARNING_MESSAGE + 'The date on which the metadata was last modified', 
-    # 'product_version': WARNING_MESSAGE + 'Version identifier of the data file or product as assigned by the data creator',
-    # 'keywords_vocabulary': WARNING_MESSAGE + 'If you are using a controlled vocabulary for the words/phrases in your "keywords" attribute, this is the unique name or identifier of the vocabulary from which keywords are taken',
-    # 'platform': WARNING_MESSAGE + 'Name of the platform(s) that supported the sensor data used to create this data set or product',
-    # 'platform_vocabulary': WARNING_MESSAGE + 'Controlled vocabulary for the names used in the "platform" attribute',
-    # 'instrument': WARNING_MESSAGE + 'Name of the contributing instrument(s) or sensor(s) used to create this data set or product',
-    # 'instrument_vocabulary': WARNING_MESSAGE + 'Controlled vocabulary for the names used in the "instrument" attribute',
-    # 'cdm_data_type': '', # set to specific type WARNING_MESSAGE + 'The data type, as derived from Unidatas Common Data Model Scientific Data types and understood by THREDDS',
-    # 'metadata_link': WARNING_MESSAGE + 'A URL that gives the location of more complete metadata',
-    # 'references': WARNING_MESSAGE + 'Published or web-based references that describe the data or methods used to produce it' #Duplicate with CF
+                                          'to the creation of this data',
+    'platform': WARNING_MESSAGE + 'Name of the platform(s) that supported the sensor data used to create this data '
+                                  'set or product',
+    'platform_vocabulary': WARNING_MESSAGE + 'Controlled vocabulary for the names used in the \'platform\' attribute',
+    'instrument': WARNING_MESSAGE + 'Name of the contributing instrument(s) or sensor(s) used to create this data '
+                                    'set or product',
+    'instrument_vocabulary': WARNING_MESSAGE + 'Controlled vocabulary for the names used in the \'instrument\' '
+                                               'attribute',
+    'cdm_data_type': WARNING_MESSAGE + 'The data type, as derived from Unidatas Common Data Model Scientific Data '
+                                       'types and understood by THREDDS (Grid, Image, Point, Radial, Station, '
+                                       'Swath, or Trajectory)',
+    'acknowledgement':  WARNING_MESSAGE + 'TA place to acknowledge various types of support for the project that'
+                                          ' produced this data',
+    'geospatial_bounds_crs':  WARNING_MESSAGE + 'The coordinate reference system (CRS) of the point coordinates in the '
+                                                'geospatial_bounds attribute',
+    'geospatial_bounds':  WARNING_MESSAGE + 'Describes the datas 2D or 3D geospatial extent in OGCs Well-Known Text '
+                                            '(WKT) Geometry format (reference the OGC Simple Feature Access (SFA) '
+                                            'specification)',
+    'geospatial_bounds_vertical_crs':  WARNING_MESSAGE + 'The vertical coordinate reference system (CRS) for the Z '
+                                                         'axis of the point coordinates in the geospatial_bounds '
+                                                         'attribute',
+    'geospatial_lat_min':  WARNING_MESSAGE + 'Describes a simple lower latitude limit; may be part of a 2- or '
+                                             '3-dimensional bounding region', # Set from dimensional data????
+    'geospatial_lat_max':  WARNING_MESSAGE + 'Describes a simple upper latitude limit; may be part of a 2- or '
+                                             '3-dimensional bounding region', # Set from dimensional data????
+    'geospatial_lon_min':  WARNING_MESSAGE + 'Describes a simple longitude limit; may be part of a 2- or '
+                                             '3-dimensional bounding region', # Set from dimensional data????
+    'geospatial_lon_max':  WARNING_MESSAGE + 'Describes a simple longitude limit; may be part of a 2- or '
+                                             '3-dimensional bounding region', # Set from dimensional data????
+    'geospatial_vertical_min':  WARNING_MESSAGE + 'Describes the numerically smaller vertical limit; may be part '
+                                                  'of a 2- or 3-dimensional bounding region',
+    'geospatial_vertical_max':  WARNING_MESSAGE + 'Describes the numerically larger vertical limit; may be part of a '
+                                                  '2- or 3-dimensional bounding region',
+    'geospatial_vertical_positive':  WARNING_MESSAGE + 'One of \'up\' or \'down\'', # Mirrors CF positive variable attribute
+    'geospatial_lat_units': WARNING_MESSAGE + 'Units for the latitude axis described in \'geospatial_lat_min\' and '
+                                              '\'geospatial_lat_max\' attributes',
+    'geospatial_lat_resolution': WARNING_MESSAGE + 'Information about the targeted spacing of points in latitude',
+    'geospatial_lon_units': WARNING_MESSAGE + 'Units for the longitude axis described in \'geospatial_lon_min\' and '
+                                              '\'geospatial_lon_max\' attributes',
+    'geospatial_lon_resolution': WARNING_MESSAGE + 'Information about the targeted spacing of points in longitude',
+    'geospatial_vertical_units': WARNING_MESSAGE + 'Units for the vertical axis described in \'geospatial_vertical_'
+                                                   'min\' and \'geospatial_vertical_max\' attributes',
+    'geospatial_vertical_resolution': WARNING_MESSAGE + 'Information about the targeted vertical spacing of points',
+    'time_coverage_start':  WARNING_MESSAGE + 'Describes the time of the first data point in the data set', # Set from dimensional data????
+    'time_coverage_end':  WARNING_MESSAGE + 'Describes the time of the last data point in the data set', # Set from dimensional data????
+    'time_coverage_duration':  WARNING_MESSAGE + 'Describes the duration of the data set', # Set from dimensional data?
+    'time_coverage_resolution':  WARNING_MESSAGE + 'Describes the targeted time period between each value in the data '
+                                                   'set',
+    'Conventions': CONVENTION_VERSIONS[1]
     }
 
 ACDD_VARIABLE_ATTRIBUTES = {
@@ -146,29 +163,27 @@ ACDD_VARIABLE_ATTRIBUTES = {
     }
 
 CF_GLOBAL_ATTRIBUTES = {
-    'title': WARNING_MESSAGE + 'a succinct description of what is in the dataset',
-    'institution': WARNING_MESSAGE + 'specifies where the original data was produced',
-    'source': WARNING_MESSAGE + 'the method of production of the original data',
-    'history': WARNING_MESSAGE + 'documentation of any modifications to the original data',
-    'references': WARNING_MESSAGE + 'published or web based sorces that document the data or how it was produced',
-    'comment': WARNING_MESSAGE + 'miscellaneous information about the data or methods used to produce it',
-    'external_variables': WARNING_MESSAGE + 'variables which are named in the attributes of the file but are not '
+    'title': WARNING_MESSAGE + 'A succinct description of what is in the dataset',
+    'institution': WARNING_MESSAGE + 'Specifies where the original data was produced',
+    'source': WARNING_MESSAGE + 'The method of production of the original data',
+    'history': WARNING_MESSAGE + 'Documentation of any modifications to the original data',
+    'references': WARNING_MESSAGE + 'Published or web based sorces that document the data or how it was produced',
+    'comment': WARNING_MESSAGE + 'Miscellaneous information about the data or methods used to produce it',
+    'external_variables': WARNING_MESSAGE + 'Variables which are named in the attributes of the file but are not '
                                             'contained in the file',
     'featureType': WARNING_MESSAGE + 'Specifies the type of data in the file/group. Set as \'point\', \'timeSeries\','
                                      ' \'trajectory\', \'profile\', \'featureType\', \'timeSeriesProfile\', or '
                                      '\'trajectoryProfile\'',
-    'Conventions': 'CF-1.9, ACDD-1.3'
+    'Conventions': CONVENTION_VERSIONS[0]
     }
 
 CF_GROUP_ATTRIBUTES = {
-    'title': WARNING_MESSAGE + 'a succinct description of what is in the dataset',
-    'history': WARNING_MESSAGE + 'documentation of any modifications to the original data'
+    'title': WARNING_MESSAGE + 'A succinct description of what is in the dataset',
+    'history': WARNING_MESSAGE + 'Documentation of any modifications to the original data'
     }
 
 GLOBAL_ATTRIBUTES = {
-    'ACDD_ATTRIBUTES_REQUIRED': ACDD_ATTRIBUTES_REQUIRED,
-    'ACDD_ATTRIBUTES_RECOMMENDED': ACDD_ATTRIBUTES_RECOMMENDED,
-    'ACDD_ATTRIBUTES_SUGGESTED': ACDD_ATTRIBUTES_SUGGESTED,
+    'ACDD_ATTRIBUTES': ACDD_ATTRIBUTES,
     'ACDD_VARIABLE_ATTRIBUTES': ACDD_VARIABLE_ATTRIBUTES,
     'CF_GLOBAL_ATTRIBUTES': CF_GLOBAL_ATTRIBUTES,
     'CF_GROUP_ATTRIBUTES': CF_GROUP_ATTRIBUTES,
@@ -182,16 +197,22 @@ CF_ALL_COORDINATE_VARIABLE_ATTRIBUTES = {
     'comment': WARNING_MESSAGE + 'Miscellaneous information about the data or methods used to produce it',
     'valid_range': WARNING_MESSAGE + 'Smallest and largest valid values of a variable',
     'actual_range': WARNING_MESSAGE + 'The smallest and the largest valid nonmissing values occurring in the variable',
-    '_FillValue': WARNING_MESSAGE + 'A value used to represent missing or undefined data. Allowed for auxiliary coordinate variables but not allowed for coordinate variables',
-    'cf_role': 'timeseries_id'#['timeseries_id', 'profile_id', 'trajectory_id'], # 'Identifies the roles of variables that identify features in discrete sampling geometries',
+    '_FillValue': WARNING_MESSAGE + 'A value used to represent missing or undefined data. Allowed for auxiliary '
+                                    'coordinate variables but not allowed for coordinate variables',
+    # 'cf_role': ['timeseries_id', 'profile_id', 'trajectory_id'], # 'Identifies the roles of variables that identify
+    # features in discrete sampling geometries',
     
     # a COORDINATE_VARIABLE:
     # 'climatology': WARNING_MESSAGE + 'Identifies a climatology variable',
     # 'bounds': WARNING_MESSAGE + 'Identifies a boundary variable',
     # 'compress': WARNING_MESSAGE + 'Records dimensions which have been compressed by gathering',
-    # 'computed_standard_name': WARNING_MESSAGE + 'Indicates the standard name, from the standard name table, of the computed vertical coordinate values, computed according to the formula in the definition',
+    # 'computed_standard_name': WARNING_MESSAGE + 'Indicates the standard name, from the standard name table, of the
+    # computed vertical coordinate values, computed according to the formula in the definition',
     # 'formula_terms': WARNING_MESSAGE + 'Identifies variables that correspond to the terms in a formula',
-    # 'add_offset': WARNING_MESSAGE + 'If present for a variable, this number is to be added to the data after it is read by an application. If both scale_factor and add_offset attributes are present, the data are first scaled before the offset is added. In cases where there is a strong constraint on dataset size, it is allowed to pack the coordinate variables (using add_offset and/or scale_factor), but this is not recommended in general', # not for all variables
+    # 'add_offset': WARNING_MESSAGE + 'If present for a variable, this number is to be added to the data after it is
+    # read by an application. If both scale_factor and add_offset attributes are present, the data are first scaled
+    # before the offset is added. In cases where there is a strong constraint on dataset size, it is allowed to pack
+    # the coordinate variables (using add_offset and/or scale_factor), but this is not recommended in general',
     # 'geometry': WARNING_MESSAGE + 'Identifies a variable that defines geometry',
     # 'nodes': WARNING_MESSAGE + 'Identifies a coordinate node variable',
     
@@ -202,9 +223,12 @@ CF_T_COORDINATE_VARIABLE_ATTRIBUTES = {
     'axis': 'T',
     'calendar': 'standard'
     # ADD THESE ATTRIBUTES BASED ON THE CALENDER SCHEDULE
-    # 'leap_month': WARNING_MESSAGE + 'Specifies which month is lengthened by a day in leap years for a user defined calendar',
-    # 'leap_year': WARNING_MESSAGE + 'Provides an example of a leap year for a user defined calendar. It is assumed that all years that differ from this year by a multiple of four are also leap years',
-    # 'month_lengths': WARNING_MESSAGE + 'Specifies the length of each month in a non-leap year for a user defined calendar'
+    # 'leap_month': WARNING_MESSAGE + 'Specifies which month is lengthened by a day in leap years for a user
+    # defined calendar',
+    # 'leap_year': WARNING_MESSAGE + 'Provides an example of a leap year for a user defined calendar. It is assumed
+    # that all years that differ from this year by a multiple of four are also leap years',
+    # 'month_lengths': WARNING_MESSAGE + 'Specifies the length of each month in a non-leap year for a user
+    # defined calendar'
     }
 
 CF_X_COORDINATE_VARIABLE_ATTRIBUTES = {
@@ -247,18 +271,30 @@ CF_DATA_VARIABLE_ATTRIBUTES = {
 
     # 'cell_methods': WARNING_MESSAGE + 'Records the method used to derive data that represents cell values',
     # 'cell_measures': WARNING_MESSAGE + 'Identifies variables that contain cell areas or volumes',
-    # 'add_offset': WARNING_MESSAGE + 'If present for a variable, this number is to be added to the data after it is read by an application. If both scale_factor and add_offset attributes are present, the data are first scaled before the offset is added. In cases where there is a strong constraint on dataset size, it is allowed to pack the coordinate variables (using add_offset and/or scale_factor), but this is not recommended in general', # not for all variables
-    # 'scale_factor': WARNING_MESSAGE + 'If present for a variable, the data are to be multiplied by this factor after the data are read by an application. See also the add_offset attribute. In cases where there is a strong constraint on dataset size, it is allowed to pack the coordinate variables (using add_offset and/or scale_factor), but this is not recommended in general',# not for all variables
-    # 'ancillary_variables': WARNING_MESSAGE + 'Identifies a variable that contains closely associated data, e.g., the measurement uncertainties of instrument data',
-    # 'standard_error_multiplier': WARNING_MESSAGE + 'If a data variable with a standard_name modifier of standard_error has this attribute, it indicates that the values are the stated multiple of one standard error',
+    # 'add_offset': WARNING_MESSAGE + 'If present for a variable, this number is to be added to the data after it is
+    # read by an application. If both scale_factor and add_offset attributes are present, the data are first scaled
+    # before the offset is added. In cases where there is a strong constraint on dataset size, it is allowed to pack
+    # the coordinate variables (using add_offset and/or scale_factor), but this is not recommended in general',
+    # 'scale_factor': WARNING_MESSAGE + 'If present for a variable, the data are to be multiplied by this factor after
+    # the data are read by an application. See also the add_offset attribute. In cases where there is a strong
+    # constraint on dataset size, it is allowed to pack the coordinate variables (using add_offset and/or scale_factor),
+    # but this is not recommended in general',# not for all variables
+    # 'ancillary_variables': WARNING_MESSAGE + 'Identifies a variable that contains closely associated data, e.g.,
+    # the measurement uncertainties of instrument data',
+    # 'standard_error_multiplier': WARNING_MESSAGE + 'If a data variable with a standard_name modifier of
+    # standard_error has this attribute, it indicates that the values are the stated multiple of one standard error',
     
     # 'geometry': WARNING_MESSAGE + 'Identifies a variable that defines geometry',
     # 'grid_mapping': WARNING_MESSAGE + 'Identifies a variable that defines a grid mapping',
-    # 'coordinate_interpolation': WARNING_MESSAGE + 'Indicates that coordinates have been compressed by sampling and identifies the tie point coordinate variables and their associated interpolation variables',
-    # 'coordinates': WARNING_MESSAGE + 'Identifies auxiliary coordinate variables, label variables, and alternate coordinate variables',
+    # 'coordinate_interpolation': WARNING_MESSAGE + 'Indicates that coordinates have been compressed by sampling and
+    # identifies the tie point coordinate variables and their associated interpolation variables',
+    # 'coordinates': WARNING_MESSAGE + 'Identifies auxiliary coordinate variables, label variables,
+    # and alternate coordinate variables',
 
     # 'flag_masks': WARNING_MESSAGE + 'Provides a list of bit fields expressing Boolean or enumerated flags',
-    # 'flag_meanings': WARNING_MESSAGE + 'Use in conjunction with flag_values to provide descriptive words or phrases for each flag value. If multi-word phrases are used to describe the flag values, then the words within a phrase should be connected with underscores',
+    # 'flag_meanings': WARNING_MESSAGE + 'Use in conjunction with flag_values to provide descriptive words or
+    # phrases for each flag value. If multi-word phrases are used to describe the flag values, then the words
+    # within a phrase should be connected with underscores',
     # 'flag_values': WARNING_MESSAGE + 'Provides a list of the flag values. Use in conjunction with flag_meanings',
     }
 

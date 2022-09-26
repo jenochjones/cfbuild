@@ -1,9 +1,10 @@
 from lxml import etree
 
-from ._constants import GLOBAL_ATTRIBUTES
+from ._constants import GLOBAL_ATTRIBUTES, NEW_VARIABLE_NAME
 from ._constants import DATA_TYPES, CONVENTION_VERSIONS, CF_DATA_TYPE_ATTRIBUTES, VARIABLE_TYPE_INDICATORS
 from ._variable_identification import sort_and_merge_attribute_lists, sort_variables
-from ._attribute_values import _check_attribute_values, _check_spatial_variables, _determine_global_attributes_for_given_conventions, _check_variable
+from ._attribute_values import _check_attribute_values, _check_spatial_variables, \
+    _determine_global_attributes_for_given_conventions, _check_variable, _fill_global_attributes
 from ._ncml_comments import GLOBAL_ATTRIBUTES_COMMENT, DIMENSIONS, DATA_TYPE_WARNING, VARIABLE_COMMENTS
 
 
@@ -17,6 +18,7 @@ def create_ncml(ds):
 
     def add_group_attributes(group, group_element, required_attributes, indent_level):
         merged_attributes = sort_and_merge_attribute_lists(required_attributes, group.attributes)
+        merged_attributes = _fill_global_attributes(merged_attributes, group)
 
         for index, attribute in enumerate(merged_attributes):
             name = attribute
@@ -134,7 +136,7 @@ def create_ncml(ds):
                 except:
                     variable_values = None
 
-            warning_list = _check_variable(variable, variable_values)
+            warning_list, rename_variable = _check_variable(variable, variable_values)
 
             for warning in warning_list:
                 xml_comment = etree.Comment(warning)
@@ -146,10 +148,26 @@ def create_ncml(ds):
                 xml_comment.tail = '\n' + '\t' * (indent_level + 1)
                 group_element.append(xml_comment)
 
-            variable_element = etree.SubElement(group_element, 'variable', name=str(variable.name),
-                                                type=str(variable.data_type),
-                                                shape=str(variable.dimensions),
-                                                variable_type=str(variable.variable_type))
+            if rename_variable:
+                variable_element = etree.SubElement(
+                    group_element,
+                    'variable',
+                    name=str(NEW_VARIABLE_NAME),
+                    orgName=str(variable.name),
+                    type=str(variable.data_type),
+                    shape=str(variable.dimensions),
+                    variable_type=str(variable.variable_type)
+                )
+            else:
+                variable_element = etree.SubElement(
+                    group_element,
+                    'variable',
+                    name=str(variable.name),
+                    type=str(variable.data_type),
+                    shape=str(variable.dimensions),
+                    variable_type=str(variable.variable_type)
+                )
+
             variable_element.text = '\n' + '\t' * (indent_level + 1)
 
             if index + 1 < len(variable_ordered_dictionary):

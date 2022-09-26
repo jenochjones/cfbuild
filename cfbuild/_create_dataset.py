@@ -6,7 +6,6 @@ def from_file(cfbuild_dataset):
     def iterate_group(cfbuild_dataset_group, netcdf4_dataset_group, group_name):
         
         variable_type_dict = determine_variable_type(cfbuild_dataset.dataset)
-        cfbuild_dataset.data_structure[group_name] = variable_type_dict
         
         file_attributes = netcdf4_dataset_group.__dict__
         

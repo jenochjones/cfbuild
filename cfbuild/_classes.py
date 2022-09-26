@@ -41,11 +41,10 @@ class Dataset:
         """
         self.attributes = {}
         self.conventions = conventions
-        self.data_structure = {}
+        self.crs = None
         self.dataset = None
         self.dimensions = {}
         self.groups = []
-        self.ordered_variables = []
         self.read_filepath = None
         self.variables = {}
 
@@ -100,6 +99,10 @@ class Dataset:
         self.dimensions[name] = new_dimension
         return new_dimension
 
+    def crs(self, epsg_number: str or int):
+        self.crs = epsg_number
+        return epsg_number
+
     def close(self):
         self.dataset.close()
 
@@ -110,7 +113,6 @@ class Group:
         self.attributes = {}
         self.groups = []
         self.variables = []
-        self.ordered_variables = []
         self.dimensions = []
 
     def attribute(self, name: str, value: str):

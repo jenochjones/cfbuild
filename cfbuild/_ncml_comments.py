@@ -34,6 +34,9 @@ CELL_MEASURE_VARIABLE = 'cell measure variables'
 
 UNKNOWN_VARIABLE = 'unknown variables'
 
+BOUNDARY_VARIABLE_ATTRIBUTES_WARNING = 'INFO - Boundary variables are part of the metadata of the associated ' \
+                                       'variable and does not need attributes.'
+
 STANDARD_NAME_WARNING = ['WARNING - The given standard name (', ') was not found in the standard name table: '
                                                                 'https://cfconventions.org/Data/cf-standard-names/'
                                                                 'current/build/cf-standard-name-table.html']
@@ -55,8 +58,12 @@ ADD_GRID_MAPPING_VARIABLE = ['WARNING - a grid mapping variable should be added 
 
 MISSING_VALUES_ERROR = ['ERROR - The coordinate variable (', ') is missing values. Please specify new values.']
 
-MONOTONIC_VALUES_ERROR = ['ERROR - The coordinate variable (', ') must have monotonically increasing values. '
-                                                               'Please specify new values.']
+
+MISSING_VALUE_WARNING = 'WARNING - The missing_value is within the valid data range. Please specify a missing_value ' \
+                        'outside the valid data range.'
+
+MONOTONIC_VALUES_ERROR = ['ERROR - The coordinate variable (', ') must have monotonically increasing or decreasing '
+                                                               'values. Please specify new values.']
 
 CANT_GET_VALUES_WARNING = ['INFO - Cannot check values for ', '.']
 
@@ -64,11 +71,11 @@ MULTIDIMENSIONAL_WARNING = 'WARNING - Coordinate variables should be one dimensi
 
 VALID_RANGE_WARNING = 'WARNING - The actual range of the data is outside the valid range'
 
+VARIABLE_NAME_WARNING = 'WARNING - Variable names should start with a letter and be composed of letters, numbers, ' \
+                        'and underscores.'
+
 FILL_VALUE_WARNING = 'WARNING - The _FillValue is within the valid data range. Please specify a _FillValue outside ' \
                      'the valid data range.'
-
-MISSING_VALUE_WARNING = 'WARNING - The missing_value is within the valid data range. Please specify a missing_value ' \
-                        'outside the valid data range.'
 
 VARIABLE_COMMENTS = {
     VARIABLE_TYPE_INDICATORS['T']: T_COORDINATE_VARIABLE,
