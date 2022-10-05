@@ -1,26 +1,26 @@
-#CFBUILD
+# CFBUILD
 
-##Building CF Compliant netCDF files
+## Building CF Compliant netCDF files
 This package is designed to help update or build netCDF datasets so that 
 they are compliant with the Attribute Conventions for Data Discovery (ACDD)
 and the Climate and Forecast (CF) Conventions. It is built to work with multidimensional
 geo-referenced datasets but may be used on any netCDF file. No guarantee is given as to 
 the accuracy of the updated datasets and user discretion is advised.
 
-###Installation
+### Installation
 To install cfbuild run "pip install cfbuild" in your terminal.
 
-###Dependencies
+### Dependencies
 * netCDF4
 * pyproj
 * cfunits
 * isodate
 * lxml
 
-###Documentation and Demos
+### Documentation and Demos
 Read the documentation here: url
 
-###Classes and Functions
+### Classes and Functions
 
 `cfbuild.Dataset(dataset_or_filepath, conventions)`
 > dataset_or_filepath: str - An OPeNDAP url or the path to a netCDF file.<br>
@@ -67,9 +67,9 @@ Scalar Coordinate, Grid Mapping Variable, Domain Variable, Boundary Variable, Ce
 > >writ_mode: str - w or clobber. w will write to a new dataset but will raise an error if a dataset with the same name 
 > >already exists. clobber uses the netCDF4 clobber function.
 
-###Tutorial
+### Tutorial
 
-####Build a dataset
+#### Build a dataset
 Import the necessary packages
 ```
 import cfbuild
@@ -87,31 +87,10 @@ lon_dimension = ds.dimension('lon', 360)
 time_variable = ds.variable('time', ('time',),
 ```
 
-####Update a dataset
+#### Update a dataset
 Import the necessary packages
 ```
 import cfbuild
 ```
-
-
-
-
-
-* f
-* f
-* f
-* f
-* f
-* f
-* f
-* f
-* f
-* f
-* f
-* f
-* f
-* f
-
-
 
 
