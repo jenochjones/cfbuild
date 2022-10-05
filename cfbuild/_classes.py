@@ -15,7 +15,7 @@ from ._refresh_ncml import _update_file
 
 
 class Dataset:
-    def __init__(self, dataset_or_filepath: None or str or netCDF4._netCDF4.Dataset,
+    def __init__(self, dataset_or_filepath: None or str or netCDF4._netCDF4.Dataset = None,
                  conventions: list or str = ['CF-1.9', 'ACDD-1.3']):
         """
         if dataset_or_filepath is netcdf file - read in the file as the Dataset

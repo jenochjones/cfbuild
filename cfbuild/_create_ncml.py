@@ -191,6 +191,9 @@ def create_ncml(ds):
                 group_element = etree.SubElement(root, group.name)
                 iterate_group(group, group_element, False, conventions, indent_level + 1)
 
+    if ds.read_filepath is None:
+        ds.read_filepath = 'unknown'
+
     root = etree.Element('netcdf', xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2',
                          location=ds.read_filepath)
     root.text = '\n\t'

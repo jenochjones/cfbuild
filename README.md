@@ -40,9 +40,9 @@ Read the documentation here: url
 > >data_type: str - The data type of the variable.<br>
 > >dimensions: tuple - The dimensions associated with the variable.<br>
 > >variable_type: str - The Climate and Forecast Convention variable type for the variable. One of Coordinate,
-Time Coordinate, X Coordinate, Y Coordinate, Z Coordinate', Auxiliary Coordinate',
-Georeferenced Data Variable, Data Variable, Ancillary Data Variable,
-Scalar Coordinate, Grid Mapping Variable, Domain Variable, Boundary Variable, Cell Measures Variable.<br>
+> >Time Coordinate, X Coordinate, Y Coordinate, Z Coordinate', Auxiliary Coordinate',
+> >Georeferenced Data Variable, Data Variable, Ancillary Data Variable,
+> >Scalar Coordinate, Grid Mapping Variable, Domain Variable, Boundary Variable, Cell Measures Variable.<br>
 > >values: numpy.array - An array of values for the variable.<br>
 > >`dimension(name, length)`<br>
 > >name: str - The name of the dimension to be created in the cfbuild dataset.<br>
@@ -71,20 +71,44 @@ Scalar Coordinate, Grid Mapping Variable, Domain Variable, Boundary Variable, Ce
 
 #### Build a dataset
 Import the necessary packages
-```
+```python
 import cfbuild
 import numpy as np
 ```
 
 Create a new dataset. Add dimensions and variables to the dataset.
-```
-ds = cfbuild.Dataset('path/to/netCDF_file.nc', ['CF-1.9', 'ACDD-1.3'])
+```python
+ds = cfbuild.Dataset()
 
 time_dimension = ds.dimension('time', None)
-lat_dimension = ds.dimension('lat', 180)
-lon_dimension = ds.dimension('lon', 360)
+lat_dimension = ds.dimension('lat', 181)
+lon_dimension = ds.dimension('lon', 361)
 
-time_variable = ds.variable('time', ('time',),
+time_variable = ds.variable('time', 'int32', ('time',), values=np.arange(0, 20, 1, dtype='int32'))
+lat_variable = ds.variable('lat', 'int32', ('lat',), values=np.arange(-90, 90, 1, dtype='int32'))
+lon_variable = ds.variable('lon', 'int32', ('lon',), values=np.arange(-180, 180, 1, dtype='int32'))
+
+data_variable = ds.variable('data', 'float64', ('time', 'lat', 'lon',))
+data_variable.values = np.random.rand(20,181,361)
+```
+
+Specify the variable type for each variable.
+```python
+time_variable.variable_type = 'Time Coordinate'
+lat_variable.variable_type = 'Y Coordinate'
+lon_variable.variable_type = 'X Coordinate'
+data_variable.variable_type = 'Georeferenced Data Variable'
+```
+
+Convert the dataset to an ncml file and generate the needed metadata.
+```python
+ncml = ds.to_ncml('foo/foo/path_to_ncml.nc')
+```
+
+Open the ncml file and edit the metadata. Once the metadata is edited to your
+satisfaction, convert it to a netCDF file.
+```python
+ncml.to_nc('foo/foo/path_to_netCDF_file.nc')
 ```
 
 #### Update a dataset
@@ -93,4 +117,43 @@ Import the necessary packages
 import cfbuild
 ```
 
+Create a new dataset. Add dimensions and variables to the dataset.
+```python
+ds = cfbuild.Dataset('foo/foo/path_to_netCDF_file.nc')
+ncml = ds.to_ncml('foo/foo/path_to_ncml.nc')
+```
 
+Open the ncml file and edit the metadata. Once the metadata is edited to your
+satisfaction, convert it to a netCDF file.
+```python
+ncml.to_nc('foo/foo/path_to_netCDF_file.nc')
+```
+
+If you have a bunch of datasets with the same data structure that need to be updated:
+create and ncml file following the same instructions previously listed, create
+a cfbuild.Dataset object from the dataset that needs to be updated, create a
+cfbuild.NCML object using the dataset just created and the path to the ncml file, and 
+create a new dataset.
+
+```python
+ds = cfbuild.Dataset('foo/foo/path_to_netCDF_file.nc')
+ncml = cfbuild.NCML('foo/foo/path_to_ncml.nc', ds)
+ncml.to_nc('foo/foo/path_to_new_netCDF_file.nc')
+```
+
+### Issues and bugs
+If you encounter an issue while using this package, please recorde it in the issues
+tab of the github repository: https://github.com/jenochjones/cfbuild/issues. 
+
+### Notes
+Modify the ncml file to modify the resulting dataset.
+
+Change a variable name:
+```xml
+<variable name="time" orgName="t" />
+```
+
+Replace values in a variable:
+```xml
+<values start="0" incr="2.25" />
+```

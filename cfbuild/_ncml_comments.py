@@ -53,8 +53,8 @@ OPENDAP_RESERVED_KEYWORDS_WARNING = ['WARNING - The variable name "', '" is a re
 DATA_TYPE_WARNING = ['WARNING - The variable datatype "', '" is  not compatible with OPeNDAP. Please specify an int16, '
                                                           'int32, float32, float64, str, or char datatype.']
 
-ADD_GRID_MAPPING_VARIABLE = ['WARNING - a grid mapping variable should be added that specifies the coordinate'
-                             ' reference system used.']
+ADD_GRID_MAPPING_VARIABLE = 'WARNING - a grid mapping variable should be added that specifies the coordinate' \
+                            ' reference system used.'
 
 MISSING_VALUES_ERROR = ['ERROR - The coordinate variable (', ') is missing values. Please specify new values.']
 
