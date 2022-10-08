@@ -1,2 +1,5 @@
 site_name: cfbuild
-theme: readthedocs
+theme:
+  name: readthedocs
+  static_templates:
+    - googleeda8401b08d4eea6.html
