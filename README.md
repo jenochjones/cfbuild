@@ -17,8 +17,8 @@ To install cfbuild run `pip install cfbuild` in your terminal.
 * isodate
 * lxml
 
-### Documentation and Demos
-Read the documentation here: url
+### Documentation
+Read the documentation here: https://cfbuild.readthedocs.io/en/latest/
 
 ### Classes and Functions
 
