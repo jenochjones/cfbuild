@@ -99,7 +99,15 @@ def create_or_update_nc_file(ncml_object, final_netcdf4_dataset, original_datase
                         final_netcdf4_dataset_group.createDimension(dimname=element.attrib['name'], size=dimension_size)
 
                 elif element.tag.split('}')[-1] == 'variable':
-                    has_values, element_values = check_element_for_values(element, eval(element.attrib['shape']),
+
+                    dimension_list = []
+
+                    for dim in element.attrib['shape'].split(', '):
+                        dimension_list.append(dim)
+
+                    dimension_tuple = tuple(dimension_list)
+
+                    has_values, element_values = check_element_for_values(element, dimension_tuple,
                                                                           final_netcdf4_dataset_group.dimensions)
 
                     if 'orgName' in element.attrib:
@@ -148,7 +156,7 @@ def create_or_update_nc_file(ncml_object, final_netcdf4_dataset, original_datase
                             new_variable = final_netcdf4_dataset_group.createVariable(
                                 varname=new_name,
                                 datatype=element.attrib['type'],
-                                dimensions=eval(element.attrib['shape']),
+                                dimensions=dimension_tuple,
                                 fill_value=fill_value
                             )
 

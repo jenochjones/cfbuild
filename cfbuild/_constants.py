@@ -4,14 +4,18 @@ WARNING_MESSAGE = '!!!CHANGE ME!!! - '
 
 NEW_VARIABLE_NAME = WARNING_MESSAGE + 'new variable name'
 
-STANDARD_NAME_TABLE_LOCATION = 'cf-standard-name-table.xml'
+STANDARD_NAME_TABLE_LOCATION = 'tables_and_constants/cf-standard-name-table.xml'
 
 CONVENTION_VERSIONS = ['CF-1.9', 'ACDD-1.3']
 
 CF_FEATURE_TYPES = ['point', 'timeSeries', 'trajectory', 'profile', 'timeSeriesProfile', 'trajectoryProfile']
 
-DATA_TYPES = ['uint8', 'uint16', 'uint32', 'ufloat32', 'ufloat64', 'int8', 'int16',
-              'int32', 'float32', 'float64', 'str', 'char', '|S1', '|S2']
+"""
+Data variables must be one of the following data types: string, char, byte, unsigned byte, short, unsigned short, int, 
+unsigned int, int64, unsigned int64, float or real, and double -- CF Conventions 2.2
+"""
+DATA_TYPES = ['str', 'char', 'uint8', 'uint16', 'uint32', 'ufloat32', 'ufloat64', 'int8', 'int16',
+              'int32', 'float32', 'float64', '|S1', '|S2']
 
 CELL_METHODS_VALUES = ['point', 'sum', 'maximum', 'maximum_absolute_value', 'median', 'mid_range', 'minimum',
                        'minimum_absolute_value', 'mean', 'mean_absolute_value', 'mean_of_upper_decile', 'mode',

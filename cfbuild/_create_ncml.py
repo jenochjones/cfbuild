@@ -18,7 +18,9 @@ def create_ncml(ds):
 
     def add_group_attributes(group, group_element, required_attributes, indent_level):
         merged_attributes = sort_and_merge_attribute_lists(required_attributes, group.attributes)
-        merged_attributes = _fill_global_attributes(merged_attributes, group)
+
+        if CONVENTION_VERSIONS[1] in group.conventions:
+            merged_attributes = _fill_global_attributes(merged_attributes, group)
 
         for index, attribute in enumerate(merged_attributes):
             name = attribute
@@ -148,6 +150,14 @@ def create_ncml(ds):
                 xml_comment.tail = '\n' + '\t' * (indent_level + 1)
                 group_element.append(xml_comment)
 
+            dimension_string = ''
+
+            for i, dim in enumerate(variable.dimensions):
+                if i + 1 != len(variable.dimensions):
+                    dimension_string += f'{dim}, '
+                else:
+                    dimension_string += f'{dim}'
+
             if rename_variable:
                 variable_element = etree.SubElement(
                     group_element,
@@ -155,7 +165,7 @@ def create_ncml(ds):
                     name=str(NEW_VARIABLE_NAME),
                     orgName=str(variable.name),
                     type=str(variable.data_type),
-                    shape=str(variable.dimensions),
+                    shape=str(dimension_string),
                     variable_type=str(variable.variable_type)
                 )
             else:
@@ -164,7 +174,7 @@ def create_ncml(ds):
                     'variable',
                     name=str(variable.name),
                     type=str(variable.data_type),
-                    shape=str(variable.dimensions),
+                    shape=str(dimension_string),
                     variable_type=str(variable.variable_type)
                 )
 

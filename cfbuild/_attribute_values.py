@@ -62,7 +62,7 @@ def _check_attribute_values(merged_attributes, variable, standard_name_table, va
                 if WARNING_MESSAGE in str(merged_attributes['long_name']):
                     merged_attributes['long_name'] = 'Longitudinal Axis'
 
-        elif merged_attributes['standard_name'] == 'time':
+        elif merged_attributes['standard_name'] == 'time' or merged_attributes['standard_name'] == 'forecast_reference_time':
             if 'units' in merged_attributes:
                 if WARNING_MESSAGE in str(merged_attributes['units']):
                     merged_attributes['units'] = {'value': '!!!CHANGE ME!!! - (temporal units) since (date)',
@@ -96,7 +96,6 @@ def _check_attribute_values(merged_attributes, variable, standard_name_table, va
                                                       'comment': STANDARD_NAME_WARNING[0] + value +
                                                                  STANDARD_NAME_WARNING[1]}
 
-
     if '_FillValue' in merged_attributes:
         if not isinstance(variable_values, numpy.ndarray) or len(variable_values.shape) <= 0:
             del merged_attributes['_FillValue']
@@ -106,7 +105,10 @@ def _check_attribute_values(merged_attributes, variable, standard_name_table, va
                     del merged_attributes['_FillValue']
                 else:
                     if WARNING_MESSAGE in str(merged_attributes['_FillValue']):
-                        merged_attributes['_FillValue'] = variable_values.fill_value
+                        if hasattr(variable_values, 'fill_value'):
+                            merged_attributes['_FillValue'] = variable_values.fill_value
+                        else:
+                            merged_attributes['_FillValue'] = numpy.ma.default_fill_value(variable_values)
 
     if 'missing_value' in merged_attributes:
         if not isinstance(variable_values, numpy.ndarray) or len(variable_values.shape) <= 0:
@@ -117,7 +119,10 @@ def _check_attribute_values(merged_attributes, variable, standard_name_table, va
                     if '_FillValue' in merged_attributes:
                         merged_attributes['missing_value'] = merged_attributes['_FillValue']
                     else:
-                        merged_attributes['missing_value'] = variable_values.fill_value
+                        if hasattr(variable_values, 'fill_value'):
+                            merged_attributes['missing_value'] = variable_values.fill_value
+                        else:
+                            merged_attributes['missing_value'] = numpy.ma.default_fill_value(variable_values)
 
     if 'valid_min' in merged_attributes or 'valid_max' in merged_attributes:
         if 'valid_range' in merged_attributes:
@@ -132,15 +137,15 @@ def _check_attribute_values(merged_attributes, variable, standard_name_table, va
                     data_type = variable.data_type
                     change_value = True
 
-                    if numpy.issubdtype(data_type, numpy.integer):
+                    if numpy.issubdtype(data_type, numpy.integer) or 'int' in str(data_type):
                         data_type = 'int'
-                    elif numpy.issubdtype(data_type, numpy.float):
+                    elif numpy.issubdtype(data_type, numpy.float) or 'float' in str(data_type):
                         data_type = 'float'
-                    elif numpy.issubdtype(data_type, numpy.str):
+                    elif numpy.issubdtype(data_type, numpy.str) or 'str' in str(data_type):
                         data_type = 'str'
-                    elif numpy.issubdtype(data_type, numpy.bool):
+                    elif numpy.issubdtype(data_type, numpy.bool) or 'bool' in str(data_type):
                         data_type = 'bool'
-                    elif numpy.issubdtype(data_type, numpy.complex):
+                    elif numpy.issubdtype(data_type, numpy.complex) or 'complex' in str(data_type):
                         data_type = 'complex'
                     else:
                         data_type = 'unknown'
@@ -165,7 +170,7 @@ def _check_attribute_values(merged_attributes, variable, standard_name_table, va
                     elif data_type == 'float':
                         if isinstance(fill_value, str):
                             fill_value = float(fill_value)
-                        if fill_value is None:
+                        if fill_value is None or str(fill_value) == 'nan':
                             valid_min = numpy.finfo(variable.data_type).min
                             valid_max = numpy.finfo(variable.data_type).max
                         elif fill_value < 0:
@@ -202,15 +207,21 @@ def _check_attribute_values(merged_attributes, variable, standard_name_table, va
                 merged_attributes['valid_range'] = {'value': merged_attributes['valid_range'],
                                                     'comment': VALID_RANGE_WARNING}
 
-    if '_FillValue' in merged_attributes and 'actual_range' in merged_attributes:
+    if '_FillValue' in merged_attributes and 'valid_range' in merged_attributes:
         if not isinstance(merged_attributes['_FillValue'], str) and not \
                 isinstance(merged_attributes['valid_range'], str):
-            if merged_attributes['valid_range'][0] <= merged_attributes['_FillValue'] <= \
-                    merged_attributes['valid_range'][1]:
-                merged_attributes['_FillValue'] = {'value': merged_attributes['_FillValue'],
-                                                   'comment': FILL_VALUE_WARNING}
+            if 'value' in merged_attributes['valid_range']:
+                if merged_attributes['valid_range']['value'][0] <= merged_attributes['_FillValue'] <= \
+                        merged_attributes['valid_range']['value'][1]:
+                    merged_attributes['_FillValue'] = {'value': merged_attributes['_FillValue'],
+                                                       'comment': FILL_VALUE_WARNING}
+            else:
+                if merged_attributes['valid_range'][0] <= merged_attributes['_FillValue'] <= \
+                        merged_attributes['valid_range'][1]:
+                    merged_attributes['_FillValue'] = {'value': merged_attributes['_FillValue'],
+                                                       'comment': FILL_VALUE_WARNING}
 
-    if 'missing_value' in merged_attributes and 'actual_range' in merged_attributes:
+    if 'missing_value' in merged_attributes and 'valid_range' in merged_attributes:
         if not isinstance(merged_attributes['missing_value'], str) and not \
                 isinstance(merged_attributes['valid_range'], str):
             if merged_attributes['valid_range'][0] <= merged_attributes['missing_value'] <= merged_attributes['valid_range'][1]:
