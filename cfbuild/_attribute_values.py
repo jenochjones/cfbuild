@@ -468,14 +468,22 @@ def _fill_global_attributes(required_attributes, dataset):
                     pass
 
             else:
-                required_attributes.pop('geospatial_lat_max')
-                required_attributes.pop('geospatial_lon_max')
-                required_attributes.pop('geospatial_lat_units')
-                required_attributes.pop('geospatial_lon_units')
-                required_attributes.pop('geospatial_lat_resolution')
-                required_attributes.pop('geospatial_lon_resolution')
-                required_attributes.pop('geospatial_bounds')
-                required_attributes.pop('geospatial_bounds_crs')
+                if 'geospatial_lat_max' in required_attributes:
+                    required_attributes.pop('geospatial_lat_max')
+                if 'geospatial_lon_max' in required_attributes:
+                    required_attributes.pop('geospatial_lon_max')
+                if 'geospatial_lat_units' in required_attributes:
+                    required_attributes.pop('geospatial_lat_units')
+                if 'geospatial_lon_units' in required_attributes:
+                    required_attributes.pop('geospatial_lon_units')
+                if 'geospatial_lat_resolution' in required_attributes:
+                    required_attributes.pop('geospatial_lat_resolution')
+                if 'geospatial_lon_resolution' in required_attributes:
+                    required_attributes.pop('geospatial_lon_resolution')
+                if 'geospatial_bounds' in required_attributes:
+                    required_attributes.pop('geospatial_bounds')
+                if 'geospatial_bounds_crs' in required_attributes:
+                    required_attributes.pop('geospatial_bounds_crs')
 
     for variable in dataset.variables:
         if dataset.variables[variable].variable_type == VARIABLE_TYPE_INDICATORS['Z']:
@@ -518,12 +526,18 @@ def _fill_global_attributes(required_attributes, dataset):
             pass
 
     else:
-        required_attributes.pop('geospatial_vertical_max')
-        required_attributes.pop('geospatial_vertical_min')
-        required_attributes.pop('geospatial_vertical_positive')
-        required_attributes.pop('geospatial_bounds_vertical_crs')
-        required_attributes.pop('geospatial_vertical_units')
-        required_attributes.pop('geospatial_vertical_resolution')
+        if 'geospatial_vertical_max' in required_attributes:
+            required_attributes.pop('geospatial_vertical_max')
+        if 'geospatial_vertical_min' in required_attributes:
+            required_attributes.pop('geospatial_vertical_min')
+        if 'geospatial_vertical_positive' in required_attributes:
+            required_attributes.pop('geospatial_vertical_positive')
+        if 'geospatial_bounds_vertical_crs' in required_attributes:
+            required_attributes.pop('geospatial_bounds_vertical_crs')
+        if 'geospatial_vertical_units' in required_attributes:
+            required_attributes.pop('geospatial_vertical_units')
+        if 'geospatial_vertical_resolution' in required_attributes:
+            required_attributes.pop('geospatial_vertical_resolution')
 
     for variable in dataset.variables:
         if dataset.variables[variable].variable_type == VARIABLE_TYPE_INDICATORS['T']:
@@ -579,10 +593,14 @@ def _fill_global_attributes(required_attributes, dataset):
             pass
 
     else:
-        required_attributes.pop('time_coverage_start')
-        required_attributes.pop('time_coverage_end')
-        required_attributes.pop('time_coverage_duration')
-        required_attributes.pop('time_coverage_resolution')
+        if 'time_coverage_start' in required_attributes:
+            required_attributes.pop('time_coverage_start')
+        if 'time_coverage_end' in required_attributes:
+            required_attributes.pop('time_coverage_end')
+        if 'time_coverage_duration' in required_attributes:
+            required_attributes.pop('time_coverage_duration')
+        if 'time_coverage_resolution' in required_attributes:
+            required_attributes.pop('time_coverage_resolution')
 
     return required_attributes
 
