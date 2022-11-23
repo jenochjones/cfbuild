@@ -10,6 +10,9 @@ the accuracy of the updated datasets and user discretion is advised.
 ### Installation
 To install cfbuild run `pip install cfbuild` in your terminal.
 
+Cfbuild requires the udunits2 library which can be
+installed via conda with: `conda install -c conda-forge udunits2`
+
 ### Dependencies
 * netCDF4
 * pyproj
