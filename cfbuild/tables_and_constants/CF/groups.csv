@@ -1,0 +1,3 @@
+attribute,data_type,variable_type,description,requiered,message,override
+history,str,Gr,List of the applications that have modified the original data.,yes,None,FALSE
+title,str,Gr,Short description of the file contents.,yes,None,FALSE

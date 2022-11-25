@@ -1,0 +1,5 @@
+attribute,value,level,message,override
+long_name,"A long descriptive name for the variable (not necessarily from a controlled vocabulary). This attribute is recommended by the NetCDF Users Guide, the COARDS convention, and the CF convention.",highly_recommended,None,FALSE
+standard_name,A long descriptive name for the variable taken from a controlled vocabulary of variable names. We recommend using the CF convention and the variable names from the CF standard name table. This attribute is recommended by the CF convention.,highly_recommended,None,FALSE
+units,"The units of the variable's data values. This attribute value should be a valid udunits string. The ""units"" attribute is recommended by the NetCDF Users Guide, the COARDS convention, and the CF convention.",highly_recommended,None,FALSE
+coverage_content_type,"An ISO 19115-1 code to indicate the source of the data (image, thematicClassification, physicalMeasurement, auxiliaryInformation, qualityInformation, referenceInformation, modelResult, or coordinate).",highly_recommended,None,FALSE

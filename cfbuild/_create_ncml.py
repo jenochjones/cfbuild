@@ -5,7 +5,7 @@ from ._constants import DATA_TYPES, CONVENTION_VERSIONS, CF_DATA_TYPE_ATTRIBUTES
 from ._variable_identification import sort_and_merge_attribute_lists, sort_variables
 from ._attribute_values import _check_attribute_values, _check_spatial_variables, \
     _determine_global_attributes_for_given_conventions, _check_variable, _fill_global_attributes
-from ._ncml_comments import GLOBAL_ATTRIBUTES_COMMENT, DIMENSIONS, DATA_TYPE_WARNING, VARIABLE_COMMENTS
+from ._ncml_comments import COMMENT_DICT
 
 
 def create_ncml(ds):
@@ -18,9 +18,7 @@ def create_ncml(ds):
 
     def add_group_attributes(group, group_element, required_attributes, indent_level):
         merged_attributes = sort_and_merge_attribute_lists(required_attributes, group.attributes)
-
-        if CONVENTION_VERSIONS[1] in group.conventions:
-            merged_attributes = _fill_global_attributes(merged_attributes, group)
+        merged_attributes = _fill_global_attributes(merged_attributes, group)
 
         for index, attribute in enumerate(merged_attributes):
             name = attribute
@@ -61,7 +59,7 @@ def create_ncml(ds):
                 variable_values = None
                 print(e)
 
-        merged_attributes = _check_attribute_values(merged_attributes, variable, ds.standard_name_table, variable_values)
+        merged_attributes = _check_attribute_values(merged_attributes, variable, variable_values)
 
         for index, attribute in enumerate(merged_attributes):
             reduce_indent = False
@@ -105,7 +103,7 @@ def create_ncml(ds):
 
         add_group_attributes(group, group_element, required_attributes, indent_level)
 
-        xml_comment = etree.Comment(DIMENSIONS)
+        xml_comment = etree.Comment(COMMENT_DICT['DIMENSIONS'])
         xml_comment.tail = '\n' + '\t' * indent_level
         group_element.append(xml_comment)
 
@@ -146,17 +144,9 @@ def create_ncml(ds):
                 group_element.append(xml_comment)
 
             if str(variable.data_type) not in DATA_TYPES:
-                xml_comment = etree.Comment(DATA_TYPE_WARNING[0] + variable.data_type + DATA_TYPE_WARNING[1])
+                xml_comment = etree.Comment(COMMENT_DICT['DATA_TYPE_WARNING'][0] + variable.data_type + ['DATA_TYPE_WARNING'][1])
                 xml_comment.tail = '\n' + '\t' * (indent_level + 1)
                 group_element.append(xml_comment)
-
-            dimension_string = ''
-
-            for i, dim in enumerate(variable.dimensions):
-                if i + 1 != len(variable.dimensions):
-                    dimension_string += f'{dim}, '
-                else:
-                    dimension_string += f'{dim}'
 
             if rename_variable:
                 variable_element = etree.SubElement(
@@ -165,7 +155,7 @@ def create_ncml(ds):
                     name=str(NEW_VARIABLE_NAME),
                     orgName=str(variable.name),
                     type=str(variable.data_type),
-                    shape=str(dimension_string),
+                    shape=str(variable.dimensions),
                     variable_type=str(variable.variable_type)
                 )
             else:
@@ -174,7 +164,7 @@ def create_ncml(ds):
                     'variable',
                     name=str(variable.name),
                     type=str(variable.data_type),
-                    shape=str(dimension_string),
+                    shape=str(variable.dimensions),
                     variable_type=str(variable.variable_type)
                 )
 
@@ -208,7 +198,7 @@ def create_ncml(ds):
                          location=ds.read_filepath)
     root.text = '\n\t'
 
-    comment = etree.Comment(GLOBAL_ATTRIBUTES_COMMENT)
+    comment = etree.Comment(COMMENT_DICT['GLOBAL_ATTRIBUTES_COMMENT'])
     comment.tail = '\n\t'
     root.append(comment)
 

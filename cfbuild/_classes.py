@@ -1,17 +1,13 @@
 import netCDF4
 import os
-import io
 
 import numpy as np
 
-from importlib import resources
 from lxml import etree
 
 from ._create_dataset import from_file
 from ._create_ncml import create_ncml
 from ._create_nc import create_or_update_nc_file
-from ._constants import STANDARD_NAME_TABLE_LOCATION
-from ._refresh_ncml import _update_file
 
 
 class Dataset:
@@ -48,11 +44,6 @@ class Dataset:
         self.read_filepath = None
         self.variables = {}
 
-        with resources.open_binary('cfbuild', STANDARD_NAME_TABLE_LOCATION) as file_path:
-            table = file_path.read()
-
-        self.standard_name_table = io.BytesIO(table)
-
         if type(dataset_or_filepath) == str:
             if os.path.exists(dataset_or_filepath) or dataset_or_filepath[:4] == 'http':
                 self.dataset = netCDF4.Dataset(dataset_or_filepath, mode='r')
@@ -85,8 +76,12 @@ class Dataset:
         self.groups.append(new_group)
         return new_group
 
-    def attribute(self, name: str, value: str):
-        self.attributes[name] = value
+    def attribute(self, name: str, value: str, override: bool = True):
+        self.attributes[name] = {
+            'value': value,
+            'message': None,
+            'override': override
+        }
 
     def variable(self, name: str, data_type: str, dimensions: tuple, variable_type: str or None = None,
                  values: np.array or None = None):
@@ -115,8 +110,12 @@ class Group:
         self.variables = []
         self.dimensions = []
 
-    def attribute(self, name: str, value: str):
-        self.attributes[name] = value
+    def attribute(self, name: str, value: str, override: bool = True):
+        self.attributes[name] = {
+            'value': value,
+            'message': None,
+            'override': override
+        }
 
     def group(self, name: str):
         new_group = Group(name)
@@ -145,8 +144,12 @@ class Variable:
         self.attributes = {}
         self.variable_type = variable_type
 
-    def attribute(self, name: str, value: str):
-        self.attributes[name] = value
+    def attribute(self, name: str, value: str, override: bool = True):
+        self.attributes[name] = {
+            'value': value,
+            'message': None,
+            'override': override
+        }
 
 
 class Dimension:

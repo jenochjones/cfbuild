@@ -1,0 +1,69 @@
+attribute,data_type,variable_type,value,requiered,message,override
+instance_dimension,str,-,An attribute which identifies an index variable and names the instance dimension to which it applies. The index variable indicates that the indexed ragged array representation is being used for a collection of features.,no,None,FALSE
+sample_dimension,str,-,An attribute which identifies a count variable and names the sample dimension to which it applies. The count variable indicates that the contiguous ragged array representation is being used for a collection of features.,no,None,FALSE
+actual_range,num,C,The smallest and the largest valid non-missing values occurring in the variable.,yes,None,FALSE
+add_offset,num,C,"If present for a variable, this number is to be added to the data after it is read by an application. If both scale_factor and add_offset attributes are present, the data are first scaled before the offset is added. In cases where there is a strong constraint on dataset size, it is allowed to pack the coordinate variables (using add_offset and/or scale_factor), but this is not recommended in general.",no,None,FALSE
+axis,str,C,"Identifies latitude, longitude, vertical, or time axes.",no,None,FALSE
+bounds,str,C,Identifies a boundary variable.,no,None,FALSE
+cf_role,str,C,Identifies the roles of variables that identify features in discrete sampling geometries,yes,None,FALSE
+climatology,str,C,Identifies a climatology variable.,no,None,FALSE
+comment,str,C,Miscellaneous information about the data or methods used to produce it.,no,None,FALSE
+compress,str,C,Records dimensions which have been compressed by gathering.,no,None,FALSE
+computed_standard_name,str,C,"Indicates the standard name, from the standard name table, of the computed vertical coordinate values, computed according to the formula in the definition.",no,None,FALSE
+_FillValue,var,C,A value used to represent missing or undefined data. Allowed for auxiliary coordinate variables but not allowed for coordinate variables.,yes,None,FALSE
+formula_terms,str,C,Identifies variables that correspond to the terms in a formula.,no,None,FALSE
+geometry,str,C,Identifies a variable that defines geometry.,no,None,FALSE
+long_name,str,C,"A descriptive name that indicates a variable""s content. This name is not standardized.",yes,None,FALSE
+missing_value,var,C,A value or values used to represent missing or undefined data. Allowed for auxiliary coordinate variables but not allowed for coordinate variables.,yes,None,FALSE
+nodes,str,C,Identifies a coordinate node variable.,no,None,FALSE
+scale_factor,num,C,"If present for a variable, the data are to be multiplied by this factor after the data are read by an application. See also the add_offset attribute. In cases where there is a strong constraint on dataset size, it is allowed to pack the coordinate variables (using add_offset and/or scale_factor), but this is not recommended in general.",no,None,FALSE
+standard_name,str,C,"A standard name that references a description of a variable""s content in the standard name table.",yes,None,FALSE
+units,str,C,"Units of a variable""s content.",yes,None,FALSE
+valid_max,num,C,Largest valid value of a variable.,no,None,FALSE
+valid_min,num,C,Smallest valid value of a variable.,no,None,FALSE
+valid_range,num,C,Smallest and largest valid values of a variable.,yes,None,FALSE
+actual_range,num,D,The smallest and the largest valid non-missing values occurring in the variable.,yes,None,FALSE
+add_offset,num,D,"If present for a variable, this number is to be added to the data after it is read by an application. If both scale_factor and add_offset attributes are present, the data are first scaled before the offset is added. In cases where there is a strong constraint on dataset size, it is allowed to pack the coordinate variables (using add_offset and/or scale_factor), but this is not recommended in general.",no,None,FALSE
+ancillary_variables,str,D,"Identifies a variable that contains closely associated data, e.g., the measurement uncertainties of instrument data.",no,None,FALSE
+cell_measures,str,D,Identifies variables that contain cell areas or volumes.,no,None,FALSE
+cell_methods,str,D,Records the method used to derive data that represents cell values.,no,None,FALSE
+comment,str,D,Miscellaneous information about the data or methods used to produce it.,yes,None,FALSE
+coordinate_interpolation,str,D,Indicates that coordinates have been compressed by sampling and identifies the tie point coordinate variables and their associated interpolation variables.,no,None,FALSE
+coordinates,str,D,"Identifies auxiliary coordinate variables, label variables, and alternate coordinate variables.",no,None,FALSE
+_FillValue,var,D,A value used to represent missing or undefined data. Allowed for auxiliary coordinate variables but not allowed for coordinate variables.,yes,None,FALSE
+flag_masks,var,D,Provides a list of bit fields expressing Boolean or enumerated flags.,no,None,FALSE
+flag_meanings,str,D,"Use in conjunction with flag_values to provide descriptive words or phrases for each flag value. If multi-word phrases are used to describe the flag values, then the words within a phrase should be connected with underscores.",no,None,FALSE
+flag_values,var,D,Provides a list of the flag values. Use in conjunction with flag_meanings.,no,None,FALSE
+geometry,str,D,Identifies a variable that defines geometry.,no,None,FALSE
+grid_mapping,str,D,Identifies a variable that defines a grid mapping.,yes,None,FALSE
+institution,str,D,Where the original data was produced.,no,None,FALSE
+long_name,str,D,"A descriptive name that indicates a variable""s content. This name is not standardized.",yes,None,FALSE
+missing_value,var,D,A value or values used to represent missing or undefined data. Allowed for auxiliary coordinate variables but not allowed for coordinate variables.,yes,None,FALSE
+references,str,D,References that describe the data or methods used to produce it.,no,None,FALSE
+scale_factor,num,D,"If present for a variable, the data are to be multiplied by this factor after the data are read by an application. See also the add_offset attribute. In cases where there is a strong constraint on dataset size, it is allowed to pack the coordinate variables (using add_offset and/or scale_factor), but this is not recommended in general.",no,None,FALSE
+source,str,D,Method of production of the original data.,no,None,FALSE
+standard_error_multiplier,num,D,"If a data variable with a standard_name modifier of standard_error has this attribute, it indicates that the values are the stated multiple of one standard error.",no,None,FALSE
+standard_name,str,D,"A standard name that references a description of a variable""s content in the standard name table.",yes,None,FALSE
+units,str,D,"Units of a variable""s content.",yes,None,FALSE
+valid_max,num,D,Largest valid value of a variable.,no,None,FALSE
+valid_min,num,D,Smallest valid value of a variable.,no,None,FALSE
+valid_range,num,D,Smallest and largest valid values of a variable.,yes,None,FALSE
+cell_measures,str,DO,Identifies variables that contain cell areas or volumes.,no,None,FALSE
+coordinate_interpolation,str,DO,Indicates that coordinates have been compressed by sampling and identifies the tie point coordinate variables and their associated interpolation variables.,no,None,FALSE
+coordinates,str,DO,"Identifies auxiliary coordinate variables, label variables, and alternate coordinate variables.",no,None,FALSE
+dimensions,str,DO,Identifies the dimensions that define a domain variable.,no,None,FALSE
+geometry,str,DO,Identifies a variable that defines geometry.,no,None,FALSE
+grid_mapping,str,DO,Identifies a variable that defines a grid mapping.,yes,None,FALSE
+long_name,str,DO,"A descriptive name that indicates a variable""s content. This name is not standardized.",yes,None,FALSE
+coordinates,str,M,"Identifies auxiliary coordinate variables, label variables, and alternate coordinate variables.",no,None,FALSE
+geometry_type,str,M,Indicates the type of geometry present.,no,None,FALSE
+grid_mapping,str,M,Identifies a variable that defines a grid mapping.,no,None,FALSE
+interior_ring,str,M,"Identifies a variable that indicates if polygon parts are interior rings (i.e., holes) or not.",no,None,FALSE
+node_coordinates,str,M,Identifies variables that contain geometry node coordinates.,no,None,FALSE
+node_count,str,M,Identifies a variable indicating the count of nodes per geometry.,no,None,FALSE
+part_node_count,str,M,Identifies a variable providing the count of nodes per geometry part.,no,None,FALSE
+calendar,str,T,Calendar used for encoding time axes.,yes,None,FALSE
+leap_month,num,T,Specifies which month is lengthened by a day in leap years for a user defined calendar.,no,None,FALSE
+leap_year,num,T,Provides an example of a leap year for a user defined calendar. It is assumed that all years that differ from this year by a multiple of four are also leap years.,no,None,FALSE
+month_lengths,num,T,Specifies the length of each month in a non-leap year for a user defined calendar.,no,None,FALSE
+positive,str,Z,Direction of increasing vertical coordinate value.,yes,None,FALSE

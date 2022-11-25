@@ -10,7 +10,7 @@ def from_file(cfbuild_dataset):
         file_attributes = netcdf4_dataset_group.__dict__
         
         for key in file_attributes.keys():
-            cfbuild_dataset_group.attribute(key, file_attributes[key])
+            cfbuild_dataset_group.attribute(key, file_attributes[key], False)
             
         for variable in netcdf4_dataset_group.variables:
             variable_name = variable
@@ -28,7 +28,7 @@ def from_file(cfbuild_dataset):
             for key in netcdf4_dataset_group.variables[variable].__dict__:
                 name = key
                 value = str(netcdf4_dataset_group.variables[variable].__dict__[key])
-                new_variable.attribute(name, value)
+                new_variable.attribute(name, value, False)
                 
         for dimension in netcdf4_dataset_group.dimensions:
             dimension_name = dimension

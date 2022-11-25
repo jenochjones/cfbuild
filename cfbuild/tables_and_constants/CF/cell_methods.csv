@@ -1,0 +1,18 @@
+cell_methods,Units,Value,message,override
+point,u,The data values are representative of points in space or time (instantaneous). This is the default method for a quantity that is intensive with respect to the specified dimension.,None,FALSE
+sum,u,The data values are representative of a sum or accumulation over the cell. This is the default method for a quantity that is extensive with respect to the specified dimension.,None,FALSE
+maximum,u,Maximum,None,FALSE
+maximum_absolute_value,u,Maximum absolute value,None,FALSE
+median,u,Median,None,FALSE
+mid_range,u,Average of maximum and minimum,None,FALSE
+minimum,u,Minimum,None,FALSE
+minimum_absolute_value,u,Minimum absolute value,None,FALSE
+mean,u,Mean (average value),None,FALSE
+mean_absolute_value,u,Mean absolute value,None,FALSE
+mean_of_upper_decile,u,Mean of the upper group of data values defined by the upper tenth of their distribution,None,FALSE
+mode,u,Mode (most common value),None,FALSE
+range,u,Absolute difference between maximum and minimum,None,FALSE
+root_mean_square,u,Root mean square (RMS),None,FALSE
+standard_deviation,u,Standard deviation,None,FALSE
+sum_of_squares,u2,Sum of squares,None,FALSE
+variance,u2,Variance,None,FALSE

@@ -9,21 +9,20 @@ from pyproj import CRS
 from cfunits import Units
 from lxml import etree
 
-from ._ncml_comments import UNITS_WARNING, STANDARD_NAME_WARNING, TEMPORAL_UNITS_WARNING, \
-    OPENDAP_RESERVED_KEYWORDS_WARNING, MISSING_VALUES_ERROR, MONOTONIC_VALUES_ERROR, \
-    CANT_GET_VALUES_WARNING, MULTIDIMENSIONAL_WARNING, VALID_RANGE_WARNING, FILL_VALUE_WARNING, \
-    MISSING_VALUE_WARNING, VARIABLE_NAME_WARNING, BOUNDARY_VARIABLE_ATTRIBUTES_WARNING
-from ._constants import CONVENTION_VERSIONS, WARNING_MESSAGE, GLOBAL_ATTRIBUTES, UNITS, \
+from ._ncml_comments import COMMENT_DICT
+from ._constants import _convert_csv_to_dict, _convert_xml_to_dict, CONVENTION_VERSIONS, WARNING_MESSAGE, UNITS, \
     OPENDAP_RESERVED_KEYWORDS, VARIABLE_TYPE_INDICATORS, COORDINATE_VARIABLE_LIST
-from ._ncml_comments import ADD_GRID_MAPPING_VARIABLE
 
+
+GLOBAL_ATTRIBUTES = _convert_csv_to_dict('tables_and_constants/ACDD/global.csv')
+STANDARD_NAME_TABLE = _convert_xml_to_dict('tables_and_constants/CF/cf-standard-name-table.xml')
 
 def _check_variable(variable, variable_values):
     list_of_warnings = []
     rename_variable = False
 
     if variable.name in OPENDAP_RESERVED_KEYWORDS:
-        list_of_warnings.append(OPENDAP_RESERVED_KEYWORDS_WARNING)
+        list_of_warnings.append(COMMENT_DICT['OPENDAP_RESERVED_KEYWORDS_WARNING'])
         rename_variable = True
 
     if variable.variable_type in COORDINATE_VARIABLE_LIST:
@@ -32,44 +31,43 @@ def _check_variable(variable, variable_values):
             list_of_warnings.append(warning_str)
 
     if not bool(re.match('^[A-Za-z0-9_]*$', variable.name)) and variable.name[0].isalpha():
-        list_of_warnings.append(VARIABLE_NAME_WARNING)
+        list_of_warnings.append(COMMENT_DICT['VARIABLE_NAME_WARNING'])
         rename_variable = True
 
     if variable.variable_type == VARIABLE_TYPE_INDICATORS['B']:
         if len(variable.attributes) > 0:
-            list_of_warnings.append(BOUNDARY_VARIABLE_ATTRIBUTES_WARNING)
+            list_of_warnings.append(COMMENT_DICT['BOUNDARY_VARIABLE_ATTRIBUTES_WARNING'])
 
     return list_of_warnings, rename_variable
 
 
-def _check_attribute_values(merged_attributes, variable, standard_name_table, variable_values):
+def _check_attribute_values(merged_attributes, variable, variable_values):
     if 'standard_name' in merged_attributes:
-        tree = etree.parse(standard_name_table)
+        tree = etree.parse(STANDARD_NAME_TABLE)
         root = tree.getroot()
         standard_name_element = root.findall('entry[@id="' + merged_attributes['standard_name'] + '"]')
 
-        if merged_attributes['standard_name'] == 'latitude':
+        if merged_attributes['standard_name']['value'] == 'latitude':
             if 'units' in merged_attributes:
-                merged_attributes['units'] = 'degrees_north'
+                merged_attributes['units']['value'] = 'degrees_north'
             if 'long_name' in merged_attributes:
-                if WARNING_MESSAGE in str(merged_attributes['long_name']):
-                    merged_attributes['long_name'] = 'Latitudinal Axis'
+                if WARNING_MESSAGE in str(merged_attributes['long_name']['value']):
+                    merged_attributes['long_name']['value'] = 'Latitudinal Axis'
 
-        elif merged_attributes['standard_name'] == 'longitude':
+        elif merged_attributes['standard_name']['value'] == 'longitude':
             if 'units' in merged_attributes:
-                merged_attributes['units'] = 'degrees_east'
+                merged_attributes['units']['value'] = 'degrees_east'
             if 'long_name' in merged_attributes:
-                if WARNING_MESSAGE in str(merged_attributes['long_name']):
-                    merged_attributes['long_name'] = 'Longitudinal Axis'
+                if WARNING_MESSAGE in str(merged_attributes['long_name']['value']):
+                    merged_attributes['long_name']['value'] = 'Longitudinal Axis'
 
-        elif merged_attributes['standard_name'] == 'time' or merged_attributes['standard_name'] == 'forecast_reference_time':
+        elif merged_attributes['standard_name']['value'] == 'time':
             if 'units' in merged_attributes:
                 if WARNING_MESSAGE in str(merged_attributes['units']):
-                    merged_attributes['units'] = {'value': '!!!CHANGE ME!!! - (temporal units) since (date)',
-                                                  'comment': TEMPORAL_UNITS_WARNING}
+                    merged_attributes['units']['comment'] = COMMENT_DICT['TEMPORAL_UNITS_WARNING']
             if 'long_name' in merged_attributes:
                 if WARNING_MESSAGE in str(merged_attributes['long_name']):
-                    merged_attributes['long_name'] = 'Temporal Axis'
+                    merged_attributes['long_name']['value'] = 'Temporal Axis'
 
         if len(standard_name_element) > 0:
             standard_name_element = standard_name_element[0]
@@ -79,50 +77,43 @@ def _check_attribute_values(merged_attributes, variable, standard_name_table, va
                 standard_units = Units(standard_units[0].text)
 
                 if 'units' in merged_attributes:
-                    if not isinstance(merged_attributes['units'], dict):
-                        units = Units(merged_attributes['units'])
+                    if not isinstance(merged_attributes['units']['value'], dict):
+                        units = Units(merged_attributes['units']['value'])
 
-                        if not standard_units.equivalent(units) and 'since' not in merged_attributes['units']:
-                            if WARNING_MESSAGE not in merged_attributes['units']:
-                                merged_attributes['units'] = {'value': str(units),
-                                                              'comment': UNITS_WARNING[0] + str(units) +
-                                                                         UNITS_WARNING[1] + str(standard_units) +
-                                                                         UNITS_WARNING[2]}
+                        if not standard_units.equivalent(units) and 'since' not in merged_attributes['units']['value']:
+                            if WARNING_MESSAGE not in merged_attributes['units']['value']:
+                                merged_attributes['units']['comment'] = COMMENT_DICT['UNITS_WARNING'][0] + \
+                                                                        str(units) + COMMENT_DICT['UNITS_WARNING'][1] + \
+                                                                        str(standard_units) + COMMENT_DICT['UNITS_WARNING'][2]
 
         else:
-            value = merged_attributes['standard_name']
+            value = merged_attributes['standard_name']['value']
             if WARNING_MESSAGE not in value:
-                merged_attributes['standard_name'] = {'value': value,
-                                                      'comment': STANDARD_NAME_WARNING[0] + value +
-                                                                 STANDARD_NAME_WARNING[1]}
+                merged_attributes['comment'] = COMMENT_DICT['STANDARD_NAME_WARNING'][0] + value + \
+                                               COMMENT_DICT['STANDARD_NAME_WARNING'][1]
+
 
     if '_FillValue' in merged_attributes:
         if not isinstance(variable_values, numpy.ndarray) or len(variable_values.shape) <= 0:
-            del merged_attributes['_FillValue']
+            del merged_attributes['_FillValue']['value']
         else:
-            if type(merged_attributes['_FillValue']) == str:
+            if type(merged_attributes['_FillValue']['value']) == str:
                 if not isinstance(variable_values, numpy.ndarray) or len(variable_values.shape) <= 0:
-                    del merged_attributes['_FillValue']
+                    del merged_attributes['_FillValue']['value']
                 else:
-                    if WARNING_MESSAGE in str(merged_attributes['_FillValue']):
-                        if hasattr(variable_values, 'fill_value'):
-                            merged_attributes['_FillValue'] = variable_values.fill_value
-                        else:
-                            merged_attributes['_FillValue'] = numpy.ma.default_fill_value(variable_values)
+                    if WARNING_MESSAGE in str(merged_attributes['_FillValue']['value']):
+                        merged_attributes['_FillValue']['value'] = variable_values.fill_value
 
     if 'missing_value' in merged_attributes:
         if not isinstance(variable_values, numpy.ndarray) or len(variable_values.shape) <= 0:
-            del merged_attributes['missing_value']
+            del merged_attributes['missing_value']['value']
         else:
-            if type(merged_attributes['missing_value']) == str:
-                if WARNING_MESSAGE in str(merged_attributes['missing_value']):
+            if type(merged_attributes['missing_value']['value']) == str:
+                if WARNING_MESSAGE in str(merged_attributes['missing_value']['value']):
                     if '_FillValue' in merged_attributes:
-                        merged_attributes['missing_value'] = merged_attributes['_FillValue']
+                        merged_attributes['missing_value']['value'] = merged_attributes['_FillValue']
                     else:
-                        if hasattr(variable_values, 'fill_value'):
-                            merged_attributes['missing_value'] = variable_values.fill_value
-                        else:
-                            merged_attributes['missing_value'] = numpy.ma.default_fill_value(variable_values)
+                        merged_attributes['missing_value']['value'] = variable_values.fill_value
 
     if 'valid_min' in merged_attributes or 'valid_max' in merged_attributes:
         if 'valid_range' in merged_attributes:
@@ -130,28 +121,28 @@ def _check_attribute_values(merged_attributes, variable, standard_name_table, va
 
     elif 'valid_range' in merged_attributes:
         if not isinstance(variable_values, numpy.ndarray) or len(variable_values.shape) <= 0:
-            del merged_attributes['valid_range']
+            del merged_attributes['valid_range']['value']
         else:
             if type(merged_attributes['valid_range']) == str:
-                if WARNING_MESSAGE in str(merged_attributes['valid_range']):
+                if WARNING_MESSAGE in str(merged_attributes['valid_range']['value']):
                     data_type = variable.data_type
                     change_value = True
 
-                    if numpy.issubdtype(data_type, numpy.integer) or 'int' in str(data_type):
+                    if numpy.issubdtype(data_type, numpy.integer):
                         data_type = 'int'
-                    elif numpy.issubdtype(data_type, numpy.float) or 'float' in str(data_type):
+                    elif numpy.issubdtype(data_type, numpy.float):
                         data_type = 'float'
-                    elif numpy.issubdtype(data_type, numpy.str) or 'str' in str(data_type):
+                    elif numpy.issubdtype(data_type, numpy.str):
                         data_type = 'str'
-                    elif numpy.issubdtype(data_type, numpy.bool) or 'bool' in str(data_type):
+                    elif numpy.issubdtype(data_type, numpy.bool):
                         data_type = 'bool'
-                    elif numpy.issubdtype(data_type, numpy.complex) or 'complex' in str(data_type):
+                    elif numpy.issubdtype(data_type, numpy.complex):
                         data_type = 'complex'
                     else:
                         data_type = 'unknown'
 
                     if '_FillValue' in merged_attributes:
-                        fill_value = merged_attributes['_FillValue']
+                        fill_value = merged_attributes['_FillValue']['value']
                     else:
                         fill_value = None
 
@@ -170,7 +161,7 @@ def _check_attribute_values(merged_attributes, variable, standard_name_table, va
                     elif data_type == 'float':
                         if isinstance(fill_value, str):
                             fill_value = float(fill_value)
-                        if fill_value is None or str(fill_value) == 'nan':
+                        if fill_value is None:
                             valid_min = numpy.finfo(variable.data_type).min
                             valid_max = numpy.finfo(variable.data_type).max
                         elif fill_value < 0:
@@ -192,41 +183,32 @@ def _check_attribute_values(merged_attributes, variable, standard_name_table, va
         if not isinstance(variable_values, numpy.ndarray) or len(variable_values.shape) <= 0:
             del merged_attributes['actual_range']
         else:
-            if type(merged_attributes['actual_range']) == str:
-                if WARNING_MESSAGE in str(merged_attributes['actual_range']):
+            if type(merged_attributes['actual_range']['value']) == str:
+                if WARNING_MESSAGE in str(merged_attributes['actual_range']['value']):
                     actual_min = numpy.nanmin(variable_values[:])
                     actual_max = numpy.nanmax(variable_values[:])
 
-                    merged_attributes['actual_range'] = [actual_min, actual_max]
+                    merged_attributes['actual_range']['value'] = [actual_min, actual_max]
 
     if 'valid_range' in merged_attributes and 'actual_range' in merged_attributes:
-        if not isinstance(merged_attributes['actual_range'], str) and not \
-                isinstance(merged_attributes['valid_range'], str):
+        if not isinstance(merged_attributes['actual_range']['value'], str) and not \
+                isinstance(merged_attributes['valid_range']['value'], str):
             if merged_attributes['actual_range'][0] <= merged_attributes['valid_range'][0] or \
                     merged_attributes['actual_range'][1] >= merged_attributes['valid_range'][1]:
-                merged_attributes['valid_range'] = {'value': merged_attributes['valid_range'],
-                                                    'comment': VALID_RANGE_WARNING}
+                merged_attributes['comment'] = COMMENT_DICT['VALID_RANGE_WARNING']
 
-    if '_FillValue' in merged_attributes and 'valid_range' in merged_attributes:
+    if '_FillValue' in merged_attributes and 'actual_range' in merged_attributes:
         if not isinstance(merged_attributes['_FillValue'], str) and not \
                 isinstance(merged_attributes['valid_range'], str):
-            if 'value' in merged_attributes['valid_range']:
-                if merged_attributes['valid_range']['value'][0] <= merged_attributes['_FillValue'] <= \
-                        merged_attributes['valid_range']['value'][1]:
-                    merged_attributes['_FillValue'] = {'value': merged_attributes['_FillValue'],
-                                                       'comment': FILL_VALUE_WARNING}
-            else:
-                if merged_attributes['valid_range'][0] <= merged_attributes['_FillValue'] <= \
-                        merged_attributes['valid_range'][1]:
-                    merged_attributes['_FillValue'] = {'value': merged_attributes['_FillValue'],
-                                                       'comment': FILL_VALUE_WARNING}
+            if merged_attributes['valid_range']['value'][0] <= merged_attributes['_FillValue']['value'] <= \
+                    merged_attributes['valid_range']['value'][1]:
+                merged_attributes['_FillValue']['comment'] = COMMENT_DICT['FILL_VALUE_WARNING']
 
-    if 'missing_value' in merged_attributes and 'valid_range' in merged_attributes:
-        if not isinstance(merged_attributes['missing_value'], str) and not \
-                isinstance(merged_attributes['valid_range'], str):
-            if merged_attributes['valid_range'][0] <= merged_attributes['missing_value'] <= merged_attributes['valid_range'][1]:
-                merged_attributes['missing_value'] = {'value': merged_attributes['missing_value'],
-                                                    'comment': MISSING_VALUE_WARNING}
+    if 'missing_value' in merged_attributes and 'actual_range' in merged_attributes:
+        if not isinstance(merged_attributes['missing_value']['value'], str) and not \
+                isinstance(merged_attributes['valid_range']['value'], str):
+            if merged_attributes['valid_range']['value'][0] <= merged_attributes['missing_value']['value'] <= merged_attributes['valid_range']['value'][1]:
+                merged_attributes['missing_value']['comment'] = COMMENT_DICT['MISSING_VALUE_WARNING']
 
     return merged_attributes
 
@@ -237,13 +219,13 @@ def _check_coordinate_variables(variable, variable_values):
         if len(variable_values.shape) == 1:
             array_sum = numpy.sum(variable_values)
             if numpy.isnan(array_sum) or numpy.ma.is_masked(variable_values):
-                warning_list.append(f'{MISSING_VALUES_ERROR[0]}{variable.name}{MISSING_VALUES_ERROR[1]}')
+                warning_list.append(f'{COMMENT_DICT["MISSING_VALUES_ERROR"][0]}{variable.name}{COMMENT_DICT["MISSING_VALUES_ERROR"][1]}')
             if not numpy.all(variable_values[1:] > variable_values[:-1], axis=0) and not numpy.all(variable_values[1:] < variable_values[:-1], axis=0):
-                warning_list.append(f'{MONOTONIC_VALUES_ERROR[0]}{variable.name}{MONOTONIC_VALUES_ERROR[1]}')
+                warning_list.append(f'{COMMENT_DICT["MONOTONIC_VALUES_ERROR"][0]}{variable.name}{COMMENT_DICT["MONOTONIC_VALUES_ERROR"][1]}')
         else:
-            warning_list.append(f'{MULTIDIMENSIONAL_WARNING}')
+            warning_list.append(COMMENT_DICT['MULTIDIMENSIONAL_WARNING'])
     else:
-        warning_list.append(f'{CANT_GET_VALUES_WARNING[0]}{variable.name}{CANT_GET_VALUES_WARNING[1]}')
+        warning_list.append(f'{COMMENT_DICT["CANT_GET_VALUES_WARNING"][0]}{variable.name}{COMMENT_DICT["CANT_GET_VALUES_WARNING"][1]}')
     return warning_list
 
 
@@ -335,7 +317,7 @@ def _check_spatial_variables(variable_ordered_dictionary):
         condition_2 = not has_grid_mapping
         condition_3 = not has_lat and not has_lon
         if condition_1 and condition_2 and condition_3:
-            warning_list.append(ADD_GRID_MAPPING_VARIABLE)
+            warning_list.append(COMMENT_DICT['ADD_GRID_MAPPING_VARIABLE'])
 
     return warning_list
 
@@ -359,51 +341,57 @@ def _fill_global_attributes(required_attributes, dataset):
             required_attributes['history'] += f'; {date}, Metadata updated using cfbuild python package'
 
     if 'geospatial_bounds_crs' in required_attributes:
-        if dataset.crs is not None and dataset.crs != '':
-            if str(dataset.crs).isdigit():
-                if len(str(dataset.crs)) == 4 or len(str(dataset.crs)) == 5:
-                    crs = f'EPSG:{dataset.crs}'
+        try:
+            if dataset.crs is not None and dataset.crs != '':
+                if str(dataset.crs).isdigit():
+                    if len(str(dataset.crs)) == 4 or len(str(dataset.crs)) == 5:
+                        crs = f'EPSG:{dataset.crs}'
+                    else:
+                        crs = None
+                elif str(dataset.crs)[:4].upper() == 'EPSG':
+                    crs = dataset.crs.upper()
                 else:
                     crs = None
-            elif str(dataset.crs)[:4].upper() == 'EPSG':
-                crs = dataset.crs.upper()
-            else:
-                crs = None
 
-            if crs is not None:
-                required_attributes['geospatial_bounds_crs'] = crs
+                if crs is not None:
+                    required_attributes['geospatial_bounds_crs'] = crs
 
-        elif WARNING_MESSAGE in str(required_attributes['geospatial_bounds_crs']):
-            grid_mapping_variable = None
+            elif WARNING_MESSAGE in str(required_attributes['geospatial_bounds_crs']):
+                grid_mapping_variable = None
 
-            for variable in dataset.variables:
-                if dataset.variables[variable].variable_type == VARIABLE_TYPE_INDICATORS['G']:
-                    grid_mapping_variable = dataset.variables[variable]
+                for variable in dataset.variables:
+                    if dataset.variables[variable].variable_type == VARIABLE_TYPE_INDICATORS['G']:
+                        grid_mapping_variable = dataset.variables[variable]
 
-            if grid_mapping_variable is not None:
-                attributes = grid_mapping_variable.attributes
+                if grid_mapping_variable is not None:
+                    attributes = grid_mapping_variable.attributes
 
-                for attribute in attributes:
-                    if attributes[attribute].isdigit():
-                        attributes[attribute] = int(attributes[attribute])
+                    for attribute in attributes:
+                        if attributes[attribute].isdigit():
+                            attributes[attribute] = int(attributes[attribute])
+                        else:
+                            try:
+                                attributes[attribute] = float(attributes[attribute])
+                            except:
+                                attributes[attribute] = attributes[attribute]
+
+                    if 'grid_mapping_name' in attributes:
+                        if attributes['grid_mapping_name'] == 'latitude_longitude':
+                            crs = 'EPSG:4326'
+                        else:
+                            crs = CRS.from_cf(attributes).to_epsg()
+                            if crs is None:
+                                crs = required_attributes['geospatial_bounds_crs']
                     else:
-                        try:
-                            attributes[attribute] = float(attributes[attribute])
-                        except:
-                            attributes[attribute] = attributes[attribute]
-
-                if 'grid_mapping_name' in attributes:
-                    if attributes['grid_mapping_name'] == 'latitude_longitude':
                         crs = 'EPSG:4326'
-                    else:
-                        crs = CRS.from_cf(attributes).to_epsg()
-                else:
-                    crs = 'EPSG:4326'
 
-            if crs is None:
-                required_attributes['geospatial_bounds_crs'] = 'EPSG:4326'
-            else:
-                required_attributes['geospatial_bounds_crs'] = crs
+                if crs is None:
+                    required_attributes['geospatial_bounds_crs'] = 'EPSG:4326'
+                else:
+                    required_attributes['geospatial_bounds_crs'] = crs
+        except:
+            print('no crs')
+            crs = None
 
     if 'geospatial_bounds' in required_attributes:
         if WARNING_MESSAGE in str(required_attributes['geospatial_bounds']):
@@ -446,34 +434,34 @@ def _fill_global_attributes(required_attributes, dataset):
                     wkt_string = f'POLYGON (({y_min} {x_min}, {y_max} {x_min}, {y_max} {x_max}, {y_min} {x_max}, ' \
                                  f'{y_min} {x_min}))'
 
-                    required_attributes['geospatial_bounds'] = wkt_string
+                    required_attributes['geospatial_bounds']['value'] = wkt_string
 
                     if 'geospatial_lon_min' in required_attributes:
-                        if WARNING_MESSAGE in str(required_attributes['geospatial_lon_min']):
-                            required_attributes['geospatial_lon_min'] = x_min
+                        if WARNING_MESSAGE in str(required_attributes['geospatial_lon_min']['value']):
+                            required_attributes['geospatial_lon_min']['value'] = x_min
                     if 'geospatial_lat_min' in required_attributes:
-                        if WARNING_MESSAGE in str(required_attributes['geospatial_lat_min']):
-                            required_attributes['geospatial_lat_min'] = y_min
+                        if WARNING_MESSAGE in str(required_attributes['geospatial_lat_min']['value']):
+                            required_attributes['geospatial_lat_min']['value'] = y_min
                     if 'geospatial_lon_max' in required_attributes:
-                        if WARNING_MESSAGE in str(required_attributes['geospatial_lon_max']):
-                            required_attributes['geospatial_lon_max'] = x_max
+                        if WARNING_MESSAGE in str(required_attributes['geospatial_lon_max']['value']):
+                            required_attributes['geospatial_lon_max']['value'] = x_max
                     if 'geospatial_lat_max' in required_attributes:
-                        if WARNING_MESSAGE in str(required_attributes['geospatial_lat_max']):
-                            required_attributes['geospatial_lat_max'] = y_max
+                        if WARNING_MESSAGE in str(required_attributes['geospatial_lat_max']['value']):
+                            required_attributes['geospatial_lat_max']['value'] = y_max
                     if 'geospatial_lon_resolution' in required_attributes:
-                        if WARNING_MESSAGE in str(required_attributes['geospatial_lon_resolution']):
-                            required_attributes['geospatial_lon_resolution'] = x_resolution
+                        if WARNING_MESSAGE in str(required_attributes['geospatial_lon_resolution']['value']):
+                            required_attributes['geospatial_lon_resolution']['value'] = x_resolution
                     if 'geospatial_lat_resolution' in required_attributes:
-                        if WARNING_MESSAGE in str(required_attributes['geospatial_lat_resolution']):
-                            required_attributes['geospatial_lat_resolution'] = y_resolution
+                        if WARNING_MESSAGE in str(required_attributes['geospatial_lat_resolution']['value']):
+                            required_attributes['geospatial_lat_resolution']['value'] = y_resolution
                     if 'units' in x_dim.attributes:
                         if 'geospatial_lon_units' in required_attributes:
-                            if WARNING_MESSAGE in str(required_attributes['geospatial_lon_units']):
-                                required_attributes['geospatial_lon_units'] = x_dim.attributes['units']
+                            if WARNING_MESSAGE in str(required_attributes['geospatial_lon_units']['value']):
+                                required_attributes['geospatial_lon_units']['value'] = x_dim.attributes['units']
                     if 'units' in y_dim.attributes:
                         if 'geospatial_lat_units' in required_attributes:
-                            if WARNING_MESSAGE in str(required_attributes['geospatial_lat_units']):
-                                required_attributes['geospatial_lat_units'] = y_dim.attributes['units']
+                            if WARNING_MESSAGE in str(required_attributes['geospatial_lat_units']['value']):
+                                required_attributes['geospatial_lat_units']['value'] = y_dim.attributes['units']
 
                 except Exception:
                     pass
@@ -614,7 +602,7 @@ def _determine_global_attributes_for_given_conventions(conventions, current_conv
         if append_convention:
             current_conventions.append(CONVENTION_VERSIONS[0])
 
-        group.attributes['Conventions'] = ', '.join(current_conventions)
+        group.attributes['Conventions']['value'] = ', '.join(current_conventions)
 
     elif CONVENTION_VERSIONS[1] in conventions and not CONVENTION_VERSIONS[0] in conventions:
         GLOBAL_ATTRIBUTES['ACDD_ATTRIBUTES']['date_created'] = datetime.now().strftime("%m/%d/%Y")
@@ -654,6 +642,6 @@ def _determine_global_attributes_for_given_conventions(conventions, current_conv
                 if convention not in current_conventions:
                     current_conventions.append(convention)
 
-        group.attributes['Conventions'] = ', '.join(current_conventions)
+        group.attributes['Conventions']['value'] = ', '.join(current_conventions)
 
     return required_attributes

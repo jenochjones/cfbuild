@@ -1,0 +1,10 @@
+attribute,data_type,variable_type,description,requiered,message,override
+comment,str,G,Miscellaneous information about the data or methods used to produce it.,no,None,FALSE
+Conventions,str,G,Name of the conventions followed by the dataset.,yes,None,FALSE
+external_variables,str,G,Identifies variables which are named by cell_measures attributes in the file but which are not present in the file.,no,None,FALSE
+featureType,str,G,"Specifies the type of discrete sampling geometry to which the data in the scope of this attribute belongs, and implies that all data variables in the scope of this attribute contain collections of features of that type.",yes,None,FALSE
+history,str,G,List of the applications that have modified the original data.,yes,None,FALSE
+institution,str,G,Where the original data was produced.,yes,None,FALSE
+references,str,G,References that describe the data or methods used to produce it.,yes,None,FALSE
+source,str,G,Method of production of the original data.,yes,None,FALSE
+title,str,G,Short description of the file contents.,yes,None,FALSE

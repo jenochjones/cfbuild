@@ -1,1 +1,3 @@
-include cfbuild/*.xml
+include cfbuild/tables_and_constants/ACDD/*.csv
+include cfbuild/tables_and_constants/CF/*.xml
+include cfbuild/tables_and_constants/CF/*.csv
