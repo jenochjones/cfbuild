@@ -144,7 +144,7 @@ def create_ncml(ds):
                 group_element.append(xml_comment)
 
             if str(variable.data_type) not in DATA_TYPES:
-                xml_comment = etree.Comment(DATA_TYPE_WARNING[0] + variable.data_type + DATA_TYPE_WARNING[1])
+                xml_comment = etree.Comment(f'{DATA_TYPE_WARNING[0]}{variable.data_type}{DATA_TYPE_WARNING[1]}')
                 xml_comment.tail = '\n' + '\t' * (indent_level + 1)
                 group_element.append(xml_comment)
 
