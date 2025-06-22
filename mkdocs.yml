@@ -1,5 +1,11 @@
 site_name: cfbuild
 theme:
   name: readthedocs
-  static_templates:
-    - googleeda8401b08d4eea6.html
+  # static_templates: # This was for google site verification, can be re-added if needed by user
+  #   - googleeda8401b08d4eea6.html
+
+nav:
+  - Home: index.md
+  - Installation: installation.md
+  - Tutorial: tutorial.md
+  # - API Reference: api.md # Placeholder for when API docs are generated

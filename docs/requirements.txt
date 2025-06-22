@@ -1,2 +1,9 @@
-Markdown<3.2
-jinja2==3.0.3
+# Base dependencies for MkDocs
+mkdocs>=1.4.0,<2.0.0
+mkdocs-readthedocs-theme>=1.0.0,<2.0.0
+
+# Markdown and Jinja2 are usually dependencies of mkdocs,
+# but can be pinned if specific versions are needed.
+# For now, let mkdocs manage them unless issues arise.
+# Markdown>=3.3
+# Jinja2>=3.0

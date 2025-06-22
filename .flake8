@@ -1,0 +1,8 @@
+[flake8]
+extend-ignore = E203, W503
+# E203: whitespace before ':' - conflicts with black on slices
+# W503: line break before binary operator - conflicts with black
+max-line-length = 88
+# Black's default is 88, but flake8 defaults to 79.
+# Setting this to 88 for consistency, though E501 will still flag lines longer than 88.
+# Many current E501 errors are much longer than 88. These will be addressed manually later.
